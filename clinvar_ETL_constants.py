@@ -9,3 +9,5 @@ HOME_PATH = Path.home()
 DATAFILES_PATH = Path(HOME_PATH/'datafiles')
 CLINVAR_DOWNLOADS = DATAFILES_PATH/'ClinVar_downloads'
 MULTIGENES = ['RAD51D']
+DATAPULL_JSONS_PATH = (
+    DATAFILES_PATH/'clinvar_datapull_datafiles/datapull_jsons')

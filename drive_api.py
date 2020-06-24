@@ -3,7 +3,7 @@ import pickle
 import time
 import socket
 import sys
-from clinvar_datapull_constants import DATAFILES_PATH
+from clinvar_ETL_constants import DATAFILES_PATH
 from googleapiclient.http import MediaFileUpload
 from googleapiclient.discovery import build
 from google_auth_oauthlib.flow import InstalledAppFlow

@@ -36,7 +36,7 @@ class ClinVar_Datapull:
     
     def __init__(self, genes=None, test_flag=False, 
                  cancer=False, cardio=False, path=None,
-                 overwrite=False, track_progress=False):
+                 overwrite=False):
         if path:
             self.path = path
         else:
@@ -55,14 +55,13 @@ class ClinVar_Datapull:
             self.genes = self.create_gene_list(GENE_FILES[1], DATAFILES_PATH)
         self.test_flag = test_flag 
         self.overwrite = overwrite
-        self.track_progress = track_progress
         
     def __repr__(self):
         repr_string = (
             f"""genes {self.genes}, test_flag {self.test_flag}  
             path {self.path}, 
             overwrite is {self.overwrite}
-            track_progress is {self.track_progress}"""
+            """
         )
         return repr_string
         
@@ -93,8 +92,7 @@ class ClinVar_Datapull:
         """queries ClinVar by gene with gene[Gene]
         option: single_gene[prop] - filters to single gene results
         """
-        if self.track_progress:
-            print(f"in ids_by_gene for {gene}")
+        print(f"in ids_by_gene for {gene}")
         gene_records = {}
         # some genes (e.g. RAD51D are listed as ≥2 genes)
         if gene not in MULTIGENES:
@@ -113,8 +111,7 @@ class ClinVar_Datapull:
     def get_ids(self, terms):
         """gets database ids using search terms
         """
-        if self.track_progress:
-            print(f"in get_ids")
+        print(f"in get_ids")
         esearch = Entrez.read(Entrez.esearch(
             db=DATABASE, 
             term=terms, 

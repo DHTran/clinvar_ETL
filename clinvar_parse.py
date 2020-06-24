@@ -8,6 +8,7 @@ from datetime import date
 from collections import Counter, namedtuple
 from pathlib import Path
 from clinvar_ETL_constants import GENE_FILES, DATAFILES_PATH
+from clinvar_ETL_constants import DATAPULL_JSONS_PATH
 from clinvar_datapull import ClinVar_Datapull
 
 
@@ -29,21 +30,19 @@ class ClinVar_Parse:
     gene_list is used to only load jsons with a filename containing a 
     gene created from ClinVar_Datapull gene list (e.g. cardio genes)
 
-    blacklist_pmids contains list of pmids that are not case or functional
+    blocklist_pmids contains list of pmids that are not case or functional
     studies (manually curated)
     """
-    datapull_path = (
-        DATAFILES_PATH/'clinvar_datapull_datafiles/datapull_jsons')
 
     def __init__(self, path=None, overwrite=False, test_flag=False):
         if path:
             self.path = path
         else:
-            self.path = datapull_path
+            self.path = DATAPULL_JSONS_PATH
         self.overwrite = overwrite
         self.test_flag = test_flag
-        self.blacklist_pmids = self.read_csv_column_as_list(
-            DATAFILES_PATH, 'clinvar_datapull_datafiles/blacklist_pmids.csv')
+        self.blocklist_pmids = self.read_csv_column_as_list(
+            DATAFILES_PATH, 'clinvar_datapull_datafiles/blocklist_pmids.csv')
         self.gene_list = (
             ClinVar_Datapull.create_gene_list(GENE_FILES, DATAFILES_PATH))
     
@@ -52,8 +51,8 @@ class ClinVar_Parse:
         path {self.path}, 
         test_flag is {self.test_flag}
         overwrite is {self.overwrite}
-        gene_list {self.gene_list}
-        blacklist_pmids {self.blacklist_pmids}
+        gene_list = {self.gene_list}
+        blocklist_pmids = {self.blocklist_pmids}
         """)
         return repr_string
         
@@ -228,13 +227,10 @@ class ClinVar_Parse:
         return variation_id, variation_name, date_updated
     
     def get_allele_data(self, target_indices, record):
-        """record is list of strings that compose the clinvar xml 
-        
+        """record is list of strings that compose the clinvar xml.
         target_indices dict provides the indices for each target text
-        
-        pulls chrom, start, stop, alt and ref data if (GRCH37 and VCF) 
-        present in list element.  If no VCF data, assume no variant 
-        mapping
+        to pull chrom, start, stop, alt and ref data. If no VCF data, 
+        assume no variant mapping
         
         Return as Allele_data namedtuple 
         ('chrom', 'start', 'stop', 'ref_seq', 'alt_seq')
@@ -389,8 +385,8 @@ class ClinVar_Parse:
             try: 
                 pmid = re.match(patterns.PMID_MATCH, line).group(1)
                 new_pmid = pmid not in pmids
-                not_blacklist = pmid not in self.blacklist_pmids
-                if new_pmid and not_blacklist:
+                not_blocklist = pmid not in self.blocklist_pmids
+                if new_pmid and not_blocklist:
                     pmids.append(pmid)
             except AttributeError:
                 pass

@@ -1,3 +1,5 @@
+import re
+
 # match digits after start= or stop="
 START_MATCH = re.compile('^.*start="(\d*)')
 STOP_MATCH = re.compile('^.*stop="(\d*)')
@@ -27,5 +29,5 @@ SUBMITTER_TARGET = '<ClinVarAccession'
 # targets list of pmids on front page
 PMID_TARGET = 'Type="Clinical significance">'
 PMID_END = '<ConditionList>'
-INDEX_KEYS = [variation_id_target, vcf_conditions, grch37_target,
-                submitter_target, pmid_target, pmid_end]
+INDEX_KEYS = [VARIATION_ID_TARGET, VCF_CONDITIONS, GRCH37_TARGET,
+                SUBMITTER_TARGET, PMID_TARGET, PMID_END]
