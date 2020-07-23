@@ -1,10 +1,11 @@
 import csv
-import json
+import simplejson as sjson
 import os
 from Bio import Entrez
 from pathlib import Path
-from clinvar_ETL_constants import DATABASE, GENE_FILES
+from clinvar_ETL_constants import DATABASE, CANCER_GENES, CARDIO_GENES
 from clinvar_ETL_constants import DATAFILES_PATH, MULTIGENES
+from clinvar_ETL_constants import TESTS_PATH, TEST_RECORDS_IDS
 from dotenv import load_dotenv
 load_dotenv()
 Entrez.api_key = os.getenv('Entrez.api_key')
@@ -15,58 +16,73 @@ class ClinVar_Datapull:
     """Pull ClinVar variation data for set of genes and returns selected
     data
     
-    - uses a genes list from csv (cancer, cardio flags) or as a list 
-      passed as an argument
-    - pulls variation ids for a given gene using gene[Gene] queries
-    with the optional single_gene flag
-    - fetch_records pulls Variation page as text using variation ids
-    - saves {'gene': [(id, record) tuples]} to json per gene
+    Args: 
+        genes (list):  list of genes. If no list provided, uses 
+            create_gene_list function to pull genes from csv(s). Which 
+            csvs depends on cardio and cancer flags, default is both
+            cancer and cardio genes csvs, If genes = 'cardio' then pulls
+            only from 'cardio.csv'. If gene = 'cancer' then pulls from
+            'cancer.csv'
+        
+        test_flag (bool): True limits records fetch to first 10, and returns 
+            the id, records dict
 
-    -cancer, cardio, or both set to true loads gene names from the
-    respective csvs with the defined gene lists
+        path (str) is set to '~/DATAFILES_PATH' by default
 
-    -datafiles path is set to '~/DATAFILES_PATH' by default
-    
-    -test_flag = True limits records fetch to first 10, and returns 
-    the id, records dict
+        overwrite (bool): True allows overwriting of existing jsons, 
+            default is False
 
-    -overwrite=False (default) 
-    prevents saving json of datapull if gene.json exists
+    method get_records: 
+        pulls variation ids for a given gene using 
+            method ids_by_gene: 
+                gene[Gene] queries with the optional [single_gene] 
+                property on the NCBI database
+
+    method fetch_records pulls Variation page as text using variation ids
+    saves {'gene': [(id, record) tuples]} to json per gene
     """
     
-    def __init__(self, genes=None, test_flag=False, 
-                 cancer=False, cardio=False, path=None,
+    def __init__(self, genes=None, test_flag=False, path=None,
                  overwrite=False):
         if path:
             self.path = path
         else:
             self.path = (
-                DATAFILES_PATH/'clinvar_datapull_datafiles/datapull_jsons')
+                DATAFILES_PATH/'clinvar_ETL_datafiles/datapull_jsons')
         if genes:
+            print("using custom gene list")
             if isinstance(genes, list):
                 self.genes = genes.upper()
             else:
                 self.genes = genes.upper().split(",")
-        elif cancer and cardio: 
-            self.genes = self.create_gene_list(GENE_FILES, DATAFILES_PATH)
-        elif cancer: 
-            self.genes = self.create_gene_list(GENE_FILES[0], DATAFILES_PATH)
-        elif cardio:
-            self.genes = self.create_gene_list(GENE_FILES[1], DATAFILES_PATH)
+        elif genes == 'cancer': 
+            self.gene_files = CANCER_GENES
+        elif genes == 'cardio':
+            self.gene_files = CARDIO_GENES
+        else:
+            self.gene_files = [CANCER_GENES, CARDIO_GENES]
+        self.genes = self.create_gene_list(
+            self.gene_files, DATAFILES_PATH)            
         self.test_flag = test_flag 
         self.overwrite = overwrite
         
     def __repr__(self):
-        repr_string = (
-            f"""genes {self.genes}, test_flag {self.test_flag}  
-            path {self.path}, 
-            overwrite is {self.overwrite}
-            """
+        repr_string = (f"""
+            genes: {self.genes}
+
+            test_flag: {self.test_flag}
+            gene_list: {self.gene_files} 
+            path: {self.path}
+            overwrite: {self.overwrite}"""
         )
         return repr_string
         
     def get_records(self):
-        """gets records from ClinVar as
+        """
+        Args: 
+            None
+        
+        Iterates over self.gene (list) to query records from ClinVar as
         {'gene': [(id1, record1),(id2, record2)...]}
         
         Note a dict/json with all results is > 1 GB, saving each 
@@ -81,18 +97,22 @@ class ClinVar_Datapull:
                 print(f"skipping {gene_json}")
                 continue
             gene_records = {}
-            gene_records = self.ids_by_gene(gene)
+            gene_records = self.records_by_gene(gene)
             if self.test_flag:
                 return gene_records
             else:
                 self.store_data_as_json(
                     gene_records, self.path, gene_json)
-        
-    def ids_by_gene(self, gene):
-        """queries ClinVar by gene with gene[Gene]
+         
+    def records_by_gene(self, gene):
+        """
+        Args:
+            gene (list): list of genes to iterate over
+
+        queries ClinVar by gene with gene[Gene]
         option: single_gene[prop] - filters to single gene results
         """
-        print(f"in ids_by_gene for {gene}")
+        print(f"in records_by_gene for {gene}")
         gene_records = {}
         # some genes (e.g. RAD51D are listed as ≥2 genes)
         if gene not in MULTIGENES:
@@ -102,10 +122,10 @@ class ClinVar_Datapull:
         print(terms)
         ids = self.get_ids(terms)
         if self.test_flag:
-            ids = ids[0:10]
+            ids = ids[0:9]
+        # ids records is list of tuples: [(id_, record)...] 
         id_records = self.fetch_clinvar_records(ids)
-        gene_records[gene] = id_records
-        # records is list of tuples: [(id_, record)...]  
+        gene_records[gene] = id_records 
         return gene_records
 
     def get_ids(self, terms):
@@ -212,9 +232,88 @@ class ClinVar_Datapull:
         
     @staticmethod
     def store_data_as_json(data, path, filename):
-        """converts to json to store data locally
+        """converts to json to store data locally (with simplejson)
         """
         print(f"in store_data_as_json, storing {filename}")
-        with open(path/filename, 'w') as f:
-            json.dump(data, f)
+        try:
+            with open(path/filename, 'w') as f:
+                sjson.dump(data, f)
+        except TypeError as e: 
+            print(f"TypeError saving data of type {type(data)}")
     
+class Test_records(ClinVar_Datapull):
+    """
+    ClinVar_datapull subclass to create and store set of Clinvar
+    records to test and validate 
+
+    Default set:  
+        https://www.ncbi.nlm.nih.gov/clinvar/variation/55634/
+        - NM_007294.4(BRCA1):c.5576C>G (p.Pro1859Arg)
+        - several ref. 
+        - LB/Benign
+
+
+        https://www.ncbi.nlm.nih.gov/clinvar/variation/55628/
+        - NM_007294.4(BRCA1):c.5558dup (p.Tyr1853Ter)
+        - several ref. 
+        - pathogenic
+
+        https://www.ncbi.nlm.nih.gov/clinvar/variation/127898/
+        - multi-gene (RAD51L3-RFFL also listed)
+        - several ref. 
+        - VUS
+
+        https://www.ncbi.nlm.nih.gov/clinvar/variation/464706/
+        - NM_001128425.1(MUTYH):c.1626C>T (p.His5
+        - silent
+
+
+        https://www.ncbi.nlm.nih.gov/clinvar/variation/37003/
+        - CDKN2A, 5-BP DUP, NT19
+        - unmapped    
+    """
+    def __init__(self, test_ids=None):
+        ClinVar_Datapull.__init__(self, path=TESTS_PATH)
+        if test_ids:
+            self.test_ids = test_ids
+        else:
+            self.test_ids = TEST_RECORDS_IDS 
+        
+
+    def __repr__(self):
+        repr_string = (f"""
+            genes: {self.genes}
+
+            test_flag: {self.test_flag}
+            gene_list: {self.gene_files} 
+            path: {self.path}
+            overwrite: {self.overwrite}
+
+            test_ids: {self.test_ids}
+        """
+        )
+        return repr_string
+
+    def create_test_records(self):
+        """
+        method to create set of test records calling 
+        ClinVar_Datapull.fetch_clinvar_records(self.test_ids)
+        """
+        ids_records = None
+        ids_records = (
+            ClinVar_Datapull.fetch_clinvar_records(self, self.test_ids)
+            )
+        return ids_records
+
+    def create_save_test_records(self):
+        """
+        method to create and save test_records as jsons
+
+        calls ClinVar_Datapull.fetch_clinvar_records(self.test_ids) and 
+        ClinVar_Datapull.store_data_as_json(
+            test_records, path, 'test_records.json')
+        """
+        ids_records = None
+        ids_records = self.create_test_records()
+        ClinVar_Datapull.store_data_as_json(
+            ids_records, self.path, 'tests.json')

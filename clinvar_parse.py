@@ -1,5 +1,5 @@
 import csv
-import json
+import simplejson as sjson
 import re
 import pandas as pd
 # patterns module contains regex and text matches
@@ -8,8 +8,9 @@ from datetime import date
 from collections import Counter, namedtuple
 from pathlib import Path
 from clinvar_ETL_constants import GENE_FILES, DATAFILES_PATH
-from clinvar_ETL_constants import DATAPULL_JSONS_PATH
-from clinvar_datapull import ClinVar_Datapull
+from clinvar_ETL_constants import DATAPULL_JSONS_PATH, BLOCKLIST_PATH
+from clinvar_ETL_constants import PARSE_JSONS_PATH
+from clinvar_datapull import ClinVar_Datapull as clinvar_dp
 
 
 class ClinVar_Parse:
@@ -41,10 +42,9 @@ class ClinVar_Parse:
             self.path = DATAPULL_JSONS_PATH
         self.overwrite = overwrite
         self.test_flag = test_flag
-        self.blocklist_pmids = self.read_csv_column_as_list(
-            DATAFILES_PATH, 'clinvar_datapull_datafiles/blocklist_pmids.csv')
+        self.blocklist_pmids = self.read_column(BLOCKLIST_PATH)
         self.gene_list = (
-            ClinVar_Datapull.create_gene_list(GENE_FILES, DATAFILES_PATH))
+            clinvar_dp.create_gene_list(GENE_FILES, DATAFILES_PATH))
     
     def __repr__(self):
         repr_string = (f"""
@@ -66,33 +66,27 @@ class ClinVar_Parse:
                 self.path, file_filter='*.json'):
             print(f"parsing records from {gene}")
             ids_records = clinvar_data[gene]
-            parse_data, parsed_count = self.parse_clinvar_records(ids_records)
-            parse_filename = f"{gene}_parse.json"
-            save_path = (
-                DATAFILES_PATH/'clinvar_datapull_datafiles/clinvar_parses')
-            parse_exists = self.parse_exists(parse_filename, save_path)
+            parse_data, parsed_count = (
+                self.parse_clinvar_records(ids_records)
+                )
+            parse_filename = f"{gene}_parse.json" 
+            parse_exists = (
+                Path(PARSE_JSONS_PATH/parse_filename).is_file()
+                )
             if self.test_flag:
                 return parse_data, parsed_count
             elif parse_exists and not self.overwrite:
                 print(f"skipping {parse_filename}") 
                 continue
             else:
-                ClinVar_Datapull.store_data_as_json(
-                    parse_data, save_path, parse_filename)
+                clinvar_dp.store_data_as_json(
+                    parse_data, PARSE_JSONS_PATH, parse_filename)
                 gene_parsed_count = (gene, parsed_count)
                 count_total.append(gene_parsed_count)
         count_filename = "gene_parsed_count.json"
-        ClinVar_Datapull.store_data_as_json(
-            count_total, save_path, count_filename)
-
-    def parse_exists(self, filename, path):
-        gene_parse = Path(path/filename)
-        print(f"checking for {gene_parse}")
-        if gene_parse.is_file():
-            print("file exists")
-            return True
-        else:
-            return False
+        # saves json with counts of records per gene
+        clinvar_dp.store_data_as_json(
+            count_total, PARSE_JSONS_PATH, count_filename)
 
     def parse_clinvar_records(self, ids_records):
         """loops through Clinvar Variation records (as list of text), 
@@ -160,16 +154,19 @@ class ClinVar_Parse:
         (assumes json encodes a dict with {gene: clinvar_data}
         """
         print("  in load_gene_json")
+        print("  filtering in {path} for {file_filter}")
         for file_ in Path(path).glob(file_filter):
-            if 'parse' in file.stem:
+            if 'parse' in file_.stem:
+                # from parse json
                 gene = file_.stem[:-6]
             else:
+                # from datapull json
                 gene = file_.stem
             if gene in self.gene_list:  
                 # checks for gene.json with gene in panel list
                 print(f"loading: {file_}")
                 with open(file_) as f:
-                    clinvar_data = json.load(f)
+                    clinvar_data = sjson.load(f)
                 yield gene, clinvar_data
             else: 
                 continue
@@ -218,8 +215,9 @@ class ClinVar_Parse:
             re.match(patterns.VARIATION_ID_MATCH, record[index]).group(1)
             )
         assert id_ == variation_id, "variation_id does not match id_"
-        variation_name = (
-                re.match(patterns.VARIATION_NAME_MATCH, record[index]).group(1))
+        variation_name = (re.match(
+            patterns.VARIATION_NAME_MATCH, record[index]).group(1)
+            )
         variation_name = (variation_name.replace('&gt;', '>'))
         date_updated = (
             re.match(patterns.DATE_UPDATED_MATCH, record[index]).group(1)
@@ -297,37 +295,52 @@ class ClinVar_Parse:
             'association': 0,
             'likely pathogenic': 0,
         }
-        indices = target_indices.get(self.submitter_target)
-        
+        indices = target_indices.get(patterns.SUBMITTER_TARGET)   
+
         def get_classification_and_comments(index, record):
-            """parses classifications and submitters comments from
+            """parses classifications and submitters comments from ClinVar
             records.  Counts number of different classifications in
-            records from a gene
+            records from a gene.  
+
+            the classification and comments positions may vary after 
+            the line containing 'Description>' and 'Comment>' respectively
+
+            Finds line index of the classification and comments, then
+            matches the classification and comments contents based on 
+            regex patterns
             """
+            def get_index(partial_record, target_text):
+                """iterates through lines of the partial record
+                to find the relative position of a target text (whose
+                position may vary) then calculates the index in the 
+                whole record
+                """
+                relative_index = next(
+                    (index for index, item in enumerate(partial_record) 
+                     if target_text in item), None)
+                if relative_index:
+                    return relative_index + index
+
             print("  running get_classification_comments") 
-            classification_results = {}
-            comment_results = {}
-            # finds first instance of match
-            # will raise StopIteration if no match
-            skip_comment_results = False
-            try:
-                classification_index = next(
-                    index for index, item in enumerate(record[index:]) 
-                    if 'Description>' in item)+index
-            except StopIteration:
-                print(f"stop iteration, printing record {record}")
-            try:
-                comment_index = next(
-                    index for index, item in enumerate(record[index:]) 
-                    if 'Comment>' in item)+index
-            except StopIteration:
-                skip_comment_results = True
-            classification_results = re.match(
-                patterns.BETWEEN_ANGLE_MATCH, record[classification_index]
-                ).group(1)
-            if skip_comment_results:
-                comment_results is None
-            else:
+            classification_results, comment_results = None, None
+            classification_index, comment_index = None, None
+            target_texts = ['Description>', 'Comment>']
+            # finds indices of the classification and comments
+            for target_text in target_texts:
+                absolute_index = get_index(record[index:], target_text)
+                if absolute_index:
+                    if target_text == 'Description>':
+                        classification_index = absolute_index
+                    elif target_text == 'Comment>':
+                        comment_index = absolute_index  
+            # gets classification and comments. If no index then 
+            # results is default None
+            print(classification_index, comment_index)
+            if classification_index:
+                classification_results = re.match(
+                    patterns.BETWEEN_ANGLE_MATCH, record[classification_index]
+                    ).group(1)
+            if comment_index:
                 comment_results = re.match(
                     patterns.BETWEEN_ANGLE_MATCH, record[comment_index]
                     ).group(1)
@@ -341,7 +354,7 @@ class ClinVar_Parse:
                 if key in classification.lower():
                     classification_count_dict[key] += 1
                     return classification_count_dict
-                
+    
         for index in indices:
             submitter_dict = {}
             classification, submitter_name = None, None
@@ -373,9 +386,9 @@ class ClinVar_Parse:
         """
         print(" running get_associated_pmids")
         pmids = []
-        start = target_indices.get(self.pmid_target)[0]
+        start = target_indices.get(patterns.PMID_TARGET)[0]
         try:
-            end = target_indices.get(self.pmid_end)[0]
+            end = target_indices.get(patterns.PMID_END)[0]
         except IndexError:
             # indexError if no pmid_end target
             if 'NumberOfSubmissions="0"' in str(record):
@@ -413,7 +426,7 @@ class ClinVar_Parse:
                     pass
                 else:
                     print(f"file {filename} exists in folder")
-                    print(f"overwrite is {overwrite}")
+                    print(f"overwrite is {self.overwrite}")
                     print("skipping save")   
                     continue   
             sorted_df.to_csv(csvs_path/filename, encoding='utf-8', index=False)
@@ -427,10 +440,10 @@ class ClinVar_Parse:
         
         """
         gene_pmids = {}
-        jsons_path = DATAFILES_PATH/'clinvar_datapull_datafiles/clinvar_parses'
-        csvs_path = DATAFILES_PATH/'clinvar_datapull_datafiles/parse_csvs'
+        jsons_path = (
+            DATAFILES_PATH/'clinvar_datapull_datafiles/parse_jsons')
         for gene, parse in self.load_gene_json(
-            jsons_path, load_parses=True):
+            jsons_path, file_filter='*_parse.json'):
             pmids = []
             for variation in parse:
                 [pmids.append(x) for x in variation['pmids']]
@@ -439,12 +452,13 @@ class ClinVar_Parse:
         return gene_pmids
 
     @staticmethod
-    def read_csv_column_as_list(path, filename):
-        """simple function read column 1 of csv as list
+    def read_column(file_path, index=0):
+        """simple function to read column of file as list
+        default column 0 (index argument)
         """
-        with open(path / filename) as f:
+        with open(file_path) as f:
             data = []
             reader = csv.reader(f)
-            data = [row[0] for row in reader]
+            data = [row[index] for row in reader]
         return data
 
