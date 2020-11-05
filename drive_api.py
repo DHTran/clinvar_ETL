@@ -3,7 +3,7 @@ import pickle
 import time
 import socket
 import sys
-from clinvar_ETL_constants import DATAFILES_PATH
+from clinvar_ETL_constants import DATAFILES_PATH, PARSE_CSVS_PATH
 from googleapiclient.http import MediaFileUpload
 from googleapiclient.discovery import build
 from google_auth_oauthlib.flow import InstalledAppFlow
@@ -14,23 +14,22 @@ from drive_secrets import SCOPES, CLINVAR_DATAPULLS_FOLDER
 
 DRIVE_SECRETS_PATH = Path('/Users/dht/secrets')
 # os path to ClinVar Datapulls folder
-CLINVAR_FOLDER = Path('/Users/dht/Google Drive/ClinVar datapulls')
+CLINVAR_FOLDER = Path('/Volumes/GoogleDrive/My Drive/ClinVar datapulls')
 
-
+# updating paths to datafiles (i.e. parse.csvs), Clinvar datapulls folder
 class Drive_Api:
     """use Google api to create and update Google sheets using
     ClinVar data.  Takes list of genes, creates filenames with
     gene and current date (day-month-year)
-
     """
 
     def __init__(self, path=None, overwrite=False):
         if path:
             self.path = path
-        else: 
-            self.path = DATAFILES_PATH/'clinvar_datapull_datafiles/parse_csvs'
+        else:
+            self.path = PARSE_CSVS_PATH
         self.overwrite = overwrite
-        
+
     def __repr__(self):
         repr_string = (f"""
         path = {self.path}
@@ -42,12 +41,12 @@ class Drive_Api:
 
     def get_service(self, api, version):
         """gets tokens using credentials.json if tokens don't already
-        exist.  Creates service with build, default api = 'sheets', 
-        version = 'v4'.  
+        exist.  Creates service with build, default api = 'sheets',
+        version = 'v4'.
         """
         creds = None
-        # The file token.pickle stores the user's access and refresh 
-        # tokens, and is created automatically when the authorization 
+        # The file token.pickle stores the user's access and refresh
+        # tokens, and is created automatically when the authorization
         # flow completes for the first time.
         if os.path.exists(DRIVE_SECRETS_PATH/'token.pickle'):
             print(f"token.pickle exists")
@@ -83,7 +82,7 @@ class Drive_Api:
                 CLINVAR_FOLDER, '*.gsheet', return_paths=False)
             # filter out existing sheets
             return [
-                item for item in csv_paths 
+                item for item in csv_paths
                 if item[0] not in existing_sheets
                 ]
 
@@ -92,7 +91,7 @@ class Drive_Api:
         for filename, csv_path in csv_paths:
             self.create_sheet(service, filename, csv_path)
             time.sleep(0.1)
-        
+
     def create_sheet(self, service, filename, csv_path):
         """creates sheets from csv files using Drive API
         Takes source_name = filename of csv (gene_month-day-year.csv)

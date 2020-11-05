@@ -21,9 +21,9 @@ class ClinVar_Datapull:
         gene_panel:  identifies gene panel to send to
             create_gene_list function to pull genes from csv(s)
             [e.g. CARDIO_GENE_LIST].  If gene_panel = 'cardio' then
-            pulls genes from 'cardio.csv'.  Possible choice = 'cancer',
+            pulls genes from 'cardio.csv'.  Possible choices = 'cancer',
             'cardio', and 'acmg59'.  Default is both cancer and cardio
-            genes csvs.
+            genes csvs if genes argument is none
 
         genes:  list of genes if a custom list is desired.  default =
             None

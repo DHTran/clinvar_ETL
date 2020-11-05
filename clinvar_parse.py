@@ -296,7 +296,8 @@ class ClinVar_Parse:
             else:
                 index = target_indices.get(patterns.VCF_CONDITIONS[0])[0]
             start, stop, alt_seq, ref_seq = None, None, None, None
-            print(f"no vcf:  {start}, {stop}")
+            if not self.suppress_output:
+                print(f"no vcf:  {start}, {stop}")
         chrom = re.match(patterns.CHROM_MATCH, record[index]).group(1)
         allele_data = Allele_data(chrom=chrom, start=start, stop=stop,
                                   ref_seq=ref_seq, alt_seq=alt_seq)
