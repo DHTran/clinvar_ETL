@@ -27,8 +27,9 @@ class ClinVar_Parse:
     Arg:
         path = path to save parse jsons. Default is DATAPULL_JSONS_PATH
 
-        test_flag(bool):  if test_flag = True, returns record instead of
-            saving to json using gene.json file name. Default = False
+        test_flag(bool):  if test_flag = True, returns record(s) and count
+        instead of saving to json using gene.json file name.
+        Default = False
 
         overwrite(bool):  overwrite = True saves over existing file,
             Default = False
@@ -37,7 +38,6 @@ class ClinVar_Parse:
 
         suppress_out(bool):  True =  prints smaller number of print
             statements that log progress. Default = True
-
 
     blocklist_pmids contains list of pmids that are not case or functional
     studies (manually curated)
@@ -55,8 +55,14 @@ class ClinVar_Parse:
         self.test_flag = test_flag
         self.blocklist_pmids = self.read_column(BLOCKLIST_PATH)
         if genes is None:
-            print("enter list of genes")
+            # ClinVar_Datapull by default creates genes list from
+            # cancer and cardio lists
+            # for future provide option to select genes lists
+            genes = clinvar_dp().genes
+            self.gene_list = genes
         else:
+            if not isinstance(genes, list):
+                genes = [genes]
             self.gene_list = genes
         self.suppress_output = suppress_output
 
@@ -129,7 +135,7 @@ class ClinVar_Parse:
             # checks for 'VariationType="copy number', if found skip record
             cnv_present = self.filter_copy_number(record)
             if cnv_present:
-                print(f"found cnv, skip")
+                print("found cnv, skip")
                 continue
             target_indices = self.get_target_indices(record)
             variation_id, variation_name, date_updated = (
@@ -176,7 +182,7 @@ class ClinVar_Parse:
             path = path to directory with target files
         """
         if not self.suppress_output:
-            print(f"in load_gene_json")
+            print("in load_gene_json")
             print(f"filtering in {path} for {file_filter}")
         for file_ in Path(path).glob(file_filter):
             if 'parse' in file_.stem:
@@ -307,7 +313,7 @@ class ClinVar_Parse:
         """pulls submitter names and associated data from ClinVar record
         """
         if not self.suppress_output:
-            print(f" running get_submitters_and_submitted_data")
+            print(" running get_submitters_and_submitted_data")
         submitters = []
         comments = {}
         classification_count_dict = {
@@ -384,7 +390,7 @@ class ClinVar_Parse:
             and updates classification count by one
             """
             for key in classification_count_dict.keys():
-                if key in classification.lower():
+                if key == classification:
                     classification_count_dict[key] += 1
                     return classification_count_dict
 
@@ -399,6 +405,8 @@ class ClinVar_Parse:
             classification, comments[submitter_name] = (
                 get_classification_and_comments(index, record)
                 )
+            classification = classification.lower()
+            # print(f"classification is {classification}")
             submitter_dict[submitter_name] = classification
             if classification not in classification_count_dict:
                 new_dict = {classification: 0}
@@ -428,7 +436,7 @@ class ClinVar_Parse:
             if 'NumberOfSubmissions="0"' in str(record):
                 # 0 submissions means no pmids
                 return []
-        for index, line in enumerate(record[start:end]):
+        for line in (record[start:end]):
             try:
                 pmid = re.match(patterns.PMID_MATCH, line).group(1)
                 new_pmid = pmid not in pmids
@@ -495,4 +503,3 @@ class ClinVar_Parse:
             reader = csv.reader(f)
             data = [row[index] for row in reader]
         return data
-

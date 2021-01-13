@@ -1,6 +1,7 @@
 import csv
 import simplejson as sjson
 import os
+from bs4 import BeautifulSoup as bsoup
 from Bio import Entrez
 from pathlib import Path
 from clinvar_ETL_constants import DATABASE, CANCER_GENE_SHEET
@@ -11,6 +12,11 @@ from dotenv import load_dotenv
 load_dotenv()
 Entrez.api_key = os.getenv('Entrez.api_key')
 Entrez.email = os.getenv('Entrez.email')
+
+"""
+TODO:  figure out how to capture the condition, submitter,
+and classification (in instances of multiple submissions)
+"""
 
 
 class ClinVar_Datapull:
@@ -36,6 +42,9 @@ class ClinVar_Datapull:
         overwrite (bool): True allows overwriting of existing jsons,
             default is False
 
+        soup: flag to use beautifulsoup4 parser (default=False). if
+        false use readlines() to read xml as list of strings
+
     method get_records:
         pulls variation ids for a given gene using
             method ids_by_gene:
@@ -47,7 +56,7 @@ class ClinVar_Datapull:
     """
 
     def __init__(self, gene_panel=None, genes=None, test_flag=False, path=None,
-                 overwrite=False):
+                 overwrite=False, soup=False):
         if path:
             self.path = path
         else:
@@ -63,6 +72,7 @@ class ClinVar_Datapull:
                 self.genes = [genes]
         self.test_flag = test_flag
         self.overwrite = overwrite
+        self.soup = soup
 
     def __repr__(self):
         repr_string = (f"""
@@ -70,8 +80,9 @@ class ClinVar_Datapull:
             genes = {self.genes}
             test_flag: {self.test_flag}
             path: {self.path}
-            overwrite: {self.overwrite}"""
-        )
+            overwrite: {self.overwrite}
+            soup flag: {self.soup}
+            """)
         return repr_string
 
     def get_records(self):
@@ -129,7 +140,7 @@ class ClinVar_Datapull:
     def get_ids(self, terms):
         """gets database ids using search terms
         """
-        print(f"in get_ids")
+        print("in get_ids")
         esearch = Entrez.read(Entrez.esearch(
             db=DATABASE,
             term=terms,
@@ -143,6 +154,10 @@ class ClinVar_Datapull:
     def fetch_clinvar_records(self, ids):
         """uses Entrez.efetch to pull Variation page
         data from ClinVar (rettype='vcv') as text
+
+        Args:
+
+        ids = variation ids (numeric) for the variation pages in ClinVar
         """
         ids_records = []
         total = len(ids)
@@ -152,7 +167,11 @@ class ClinVar_Datapull:
             handle = Entrez.efetch(
                 db=DATABASE, id=variation_id, is_variationid=True,
                 rettype='vcv', retmode='xml')
-            record = handle.readlines()
+            if self.soup:
+                print("running bsoup")
+                record = bsoup(handle)
+            else:
+                record = handle.readlines()
             if 'copy number' in record:
                 print(f"copy number for {variation_id}")
                 handle.close()
@@ -202,7 +221,7 @@ class ClinVar_Datapull:
             gene_files.append(ACMG59_GENE_SHEET)
         else:
             gene_files = [CANCER_GENE_SHEET, CARDIO_GENE_SHEET]
-        print(gene_files)
+        # print(gene_files)
         for file_ in gene_files:
             with open(DATAFILES_PATH/file_) as f:
                 reader = csv.reader(f)
@@ -215,7 +234,7 @@ class ClinVar_Datapull:
         gene_json = Path(path/filename)
         print(f"checking for {gene_json}")
         if gene_json.is_file():
-            print(f"file exists")
+            print("file exists")
             return True
         else:
             return False
@@ -243,81 +262,47 @@ class ClinVar_Datapull:
             with open(path/filename, 'w') as f:
                 sjson.dump(data, f)
         except TypeError as e:
-            print(f"TypeError saving data of type {type(data)}")
+            print(f"TypeError saving data of type {type(e)}")
+
 
 class Test_records(ClinVar_Datapull):
     """
     ClinVar_datapull subclass to create and store set of Clinvar
-    records to test and validate
+    records to test and validate.
 
-    Default set:
-        https://www.ncbi.nlm.nih.gov/clinvar/variation/55634/
-        - NM_007294.4(BRCA1):c.5576C>G (p.Pro1859Arg)
-        - several ref.
-        - LB/Benign
+    Args:
+    test_ids (list of numbers) = list of variation ids to pull from
+    ClinVar
 
+    if test_ids = None uses TEST_RECORDS_IDS import from
+    clinvar_ETL_constants.py
 
-        https://www.ncbi.nlm.nih.gov/clinvar/variation/55628/
-        - NM_007294.4(BRCA1):c.5558dup (p.Tyr1853Ter)
-        - several ref.
-        - pathogenic
-
-        https://www.ncbi.nlm.nih.gov/clinvar/variation/127898/
-        - multi-gene (RAD51L3-RFFL also listed)
-        - several ref.
-        - VUS
-
-        https://www.ncbi.nlm.nih.gov/clinvar/variation/464706/
-        - NM_001128425.1(MUTYH):c.1626C>T (p.His5
-        - silent
-
-
-        https://www.ncbi.nlm.nih.gov/clinvar/variation/37003/
-        - CDKN2A, 5-BP DUP, NT19
-        - unmapped
     """
-    def __init__(self, test_ids=None):
+    def __init__(self, test_ids=None, soup=False):
         ClinVar_Datapull.__init__(self, path=TESTS_PATH)
         if test_ids:
             self.test_ids = test_ids
         else:
             self.test_ids = TEST_RECORDS_IDS
-
+        self.soup = soup
 
     def __repr__(self):
         repr_string = (f"""
-            genes: {self.genes}
-
-            test_flag: {self.test_flag}
-            gene_list: {self.gene_files}
-            path: {self.path}
-            overwrite: {self.overwrite}
-
             test_ids: {self.test_ids}
-        """
-        )
+            soup flag: {self.soup}
+        """)
         return repr_string
 
-    def create_test_records(self):
+    def fetch_test_records(self, save=False):
         """
-        method to create set of test records calling
-        ClinVar_Datapull.fetch_clinvar_records(self.test_ids)
-        """
-        ids_records = None
-        ids_records = (
-            ClinVar_Datapull.fetch_clinvar_records(self, self.test_ids)
-            )
-        return ids_records
-
-    def create_save_test_records(self):
-        """
-        method to create and save test_records as jsons
-
-        calls ClinVar_Datapull.fetch_clinvar_records(self.test_ids) and
-        ClinVar_Datapull.store_data_as_json(
-            test_records, path, 'test_records.json')
+        method to fetch as set of test records using preset variation
+        ids (TEST_RECORDS_IDS from clinvar_ETL_constants) or a
+        specified set of ids
         """
         ids_records = None
-        ids_records = self.create_test_records()
-        ClinVar_Datapull.store_data_as_json(
-            ids_records, self.path, 'test_records.json')
+        ids_records = self.fetch_clinvar_records(self.test_ids)
+        if save:
+            self.store_data_as_json(
+                ids_records, self.path, 'test_records.json')
+        else:
+            return ids_records

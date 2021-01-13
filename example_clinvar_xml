@@ -1,0 +1,1014 @@
+<?xml version="1.0" encoding="UTF-8" ?><html><body><clinvarresult-set><variationarchive accession="VCV000236589" datecreated="2016-06-29" datelastupdated="2020-12-07" numberofsubmissions="7" numberofsubmitters="6" recordtype="interpreted" variationid="236589" variationname="NM_000038.6(APC):c.3340C&gt;T (p.Arg1114Ter)" variationtype="single nucleotide variant" version="6">
+<recordstatus>current</recordstatus>
+<species>Homo sapiens</species>
+<interpretedrecord>
+<simpleallele alleleid="239564" variationid="236589">
+<genelist>
+<gene fullname="APC regulator of WNT signaling pathway" geneid="324" hgnc_id="HGNC:583" relationshiptype="within single gene" source="submitted" symbol="APC">
+<location>
+<cytogeneticlocation>5q22.2</cytogeneticlocation>
+<sequencelocation accession="NC_000005.10" assembly="GRCh38" assemblyaccessionversion="GCF_000001405.38" assemblystatus="current" chr="5" display_start="112707498" display_stop="112846239" start="112707498" stop="112846239" strand="+"></sequencelocation>
+<sequencelocation accession="NC_000005.9" assembly="GRCh37" assemblyaccessionversion="GCF_000001405.25" assemblystatus="previous" chr="5" display_start="112043201" display_stop="112181935" start="112043201" stop="112181935" strand="+"></sequencelocation>
+</location>
+<omim>611731</omim>
+<haploinsufficiency clingen="https://www.ncbi.nlm.nih.gov/projects/dbvar/ISCA/isca_gene.cgi?sym=APC" last_evaluated="2012-07-06">Sufficient evidence for dosage pathogenicity</haploinsufficiency>
+<triplosensitivity clingen="https://www.ncbi.nlm.nih.gov/projects/dbvar/ISCA/isca_gene.cgi?sym=APC" last_evaluated="2012-07-06">No evidence available</triplosensitivity>
+<property>gene_acmg_incidental_2013</property>
+<property>gene_acmg_incidental_2016</property>
+</gene>
+</genelist>
+<name>NM_000038.6(APC):c.3340C&gt;T (p.Arg1114Ter)</name>
+<canonicalspdi>NC_000005.10:112838933:C:T</canonicalspdi>
+<varianttype>single nucleotide variant</varianttype>
+<location>
+<cytogeneticlocation>5q22.2</cytogeneticlocation>
+<sequencelocation accession="NC_000005.10" alternateallelevcf="T" assembly="GRCh38" assemblyaccessionversion="GCF_000001405.38" assemblystatus="current" chr="5" display_start="112838934" display_stop="112838934" fordisplay="true" positionvcf="112838934" referenceallelevcf="C" start="112838934" stop="112838934" variantlength="1"></sequencelocation>
+<sequencelocation accession="NC_000005.9" alternateallelevcf="T" assembly="GRCh37" assemblyaccessionversion="GCF_000001405.25" assemblystatus="previous" chr="5" display_start="112174631" display_stop="112174631" positionvcf="112174631" referenceallelevcf="C" start="112174631" stop="112174631" variantlength="1"></sequencelocation>
+</location>
+<proteinchange>R1096*</proteinchange>
+<proteinchange>R1114*</proteinchange>
+<proteinchange>R1013*</proteinchange>
+<proteinchange>R1023*</proteinchange>
+<proteinchange>R1073*</proteinchange>
+<proteinchange>R1086*</proteinchange>
+<proteinchange>R1089*</proteinchange>
+<proteinchange>R1124*</proteinchange>
+<proteinchange>R1132*</proteinchange>
+<proteinchange>R954*</proteinchange>
+<proteinchange>R988*</proteinchange>
+<proteinchange>R831*</proteinchange>
+<proteinchange>R1055*</proteinchange>
+<hgvslist>
+<hgvs type="genomic">
+<nucleotideexpression change="g.151414C&gt;T" sequenceaccession="LRG_130" sequenceaccessionversion="LRG_130">
+<expression>LRG_130:g.151414C&gt;T</expression>
+</nucleotideexpression>
+</hgvs>
+<hgvs assembly="GRCh38" type="genomic, top-level">
+<nucleotideexpression assembly="GRCh38" change="g.112838934C&gt;T" sequenceaccession="NC_000005" sequenceaccessionversion="NC_000005.10" sequenceversion="10">
+<expression>NC_000005.10:g.112838934C&gt;T</expression>
+</nucleotideexpression>
+</hgvs>
+<hgvs assembly="GRCh37" type="genomic, top-level">
+<nucleotideexpression assembly="GRCh37" change="g.112174631C&gt;T" sequenceaccession="NC_000005" sequenceaccessionversion="NC_000005.9" sequenceversion="9">
+<expression>NC_000005.9:g.112174631C&gt;T</expression>
+</nucleotideexpression>
+</hgvs>
+<hgvs type="coding">
+<nucleotideexpression change="c.3340C&gt;T" maneselect="true" sequenceaccession="NM_000038" sequenceaccessionversion="NM_000038.6" sequenceversion="6">
+<expression>NM_000038.6:c.3340C&gt;T</expression>
+</nucleotideexpression>
+<proteinexpression change="p.Arg1114Ter" sequenceaccession="NP_000029" sequenceaccessionversion="NP_000029.2" sequenceversion="2">
+<expression>NP_000029.2:p.Arg1114Ter</expression>
+</proteinexpression>
+<molecularconsequence db="SO" id="SO:0001587" type="nonsense"></molecularconsequence>
+</hgvs>
+<hgvs type="coding">
+<nucleotideexpression change="c.3340C&gt;T" sequenceaccession="NM_001127510" sequenceaccessionversion="NM_001127510.3" sequenceversion="3">
+<expression>NM_001127510.3:c.3340C&gt;T</expression>
+</nucleotideexpression>
+<proteinexpression change="p.Arg1114Ter" sequenceaccession="NP_001120982" sequenceaccessionversion="NP_001120982.1" sequenceversion="1">
+<expression>NP_001120982.1:p.Arg1114Ter</expression>
+</proteinexpression>
+<molecularconsequence db="SO" id="SO:0001587" type="nonsense"></molecularconsequence>
+</hgvs>
+<hgvs type="coding">
+<nucleotideexpression change="c.3286C&gt;T" sequenceaccession="NM_001127511" sequenceaccessionversion="NM_001127511.3" sequenceversion="3">
+<expression>NM_001127511.3:c.3286C&gt;T</expression>
+</nucleotideexpression>
+<proteinexpression change="p.Arg1096Ter" sequenceaccession="NP_001120983" sequenceaccessionversion="NP_001120983.2" sequenceversion="2">
+<expression>NP_001120983.2:p.Arg1096Ter</expression>
+</proteinexpression>
+<molecularconsequence db="SO" id="SO:0001587" type="nonsense"></molecularconsequence>
+</hgvs>
+<hgvs type="coding">
+<nucleotideexpression change="c.3340C&gt;T" sequenceaccession="NM_001354895" sequenceaccessionversion="NM_001354895.2" sequenceversion="2">
+<expression>NM_001354895.2:c.3340C&gt;T</expression>
+</nucleotideexpression>
+<proteinexpression change="p.Arg1114Ter" sequenceaccession="NP_001341824" sequenceaccessionversion="NP_001341824.1" sequenceversion="1">
+<expression>NP_001341824.1:p.Arg1114Ter</expression>
+</proteinexpression>
+<molecularconsequence db="SO" id="SO:0001587" type="nonsense"></molecularconsequence>
+</hgvs>
+<hgvs type="coding">
+<nucleotideexpression change="c.3394C&gt;T" sequenceaccession="NM_001354896" sequenceaccessionversion="NM_001354896.2" sequenceversion="2">
+<expression>NM_001354896.2:c.3394C&gt;T</expression>
+</nucleotideexpression>
+<proteinexpression change="p.Arg1132Ter" sequenceaccession="NP_001341825" sequenceaccessionversion="NP_001341825.1" sequenceversion="1">
+<expression>NP_001341825.1:p.Arg1132Ter</expression>
+</proteinexpression>
+<molecularconsequence db="SO" id="SO:0001587" type="nonsense"></molecularconsequence>
+</hgvs>
+<hgvs type="coding">
+<nucleotideexpression change="c.3370C&gt;T" sequenceaccession="NM_001354897" sequenceaccessionversion="NM_001354897.2" sequenceversion="2">
+<expression>NM_001354897.2:c.3370C&gt;T</expression>
+</nucleotideexpression>
+<proteinexpression change="p.Arg1124Ter" sequenceaccession="NP_001341826" sequenceaccessionversion="NP_001341826.1" sequenceversion="1">
+<expression>NP_001341826.1:p.Arg1124Ter</expression>
+</proteinexpression>
+<molecularconsequence db="SO" id="SO:0001587" type="nonsense"></molecularconsequence>
+</hgvs>
+<hgvs type="coding">
+<nucleotideexpression change="c.3265C&gt;T" sequenceaccession="NM_001354898" sequenceaccessionversion="NM_001354898.2" sequenceversion="2">
+<expression>NM_001354898.2:c.3265C&gt;T</expression>
+</nucleotideexpression>
+<proteinexpression change="p.Arg1089Ter" sequenceaccession="NP_001341827" sequenceaccessionversion="NP_001341827.1" sequenceversion="1">
+<expression>NP_001341827.1:p.Arg1089Ter</expression>
+</proteinexpression>
+<molecularconsequence db="SO" id="SO:0001587" type="nonsense"></molecularconsequence>
+</hgvs>
+<hgvs type="coding">
+<nucleotideexpression change="c.3256C&gt;T" sequenceaccession="NM_001354899" sequenceaccessionversion="NM_001354899.2" sequenceversion="2">
+<expression>NM_001354899.2:c.3256C&gt;T</expression>
+</nucleotideexpression>
+<proteinexpression change="p.Arg1086Ter" sequenceaccession="NP_001341828" sequenceaccessionversion="NP_001341828.1" sequenceversion="1">
+<expression>NP_001341828.1:p.Arg1086Ter</expression>
+</proteinexpression>
+<molecularconsequence db="SO" id="SO:0001587" type="nonsense"></molecularconsequence>
+</hgvs>
+<hgvs type="coding">
+<nucleotideexpression change="c.3217C&gt;T" sequenceaccession="NM_001354900" sequenceaccessionversion="NM_001354900.2" sequenceversion="2">
+<expression>NM_001354900.2:c.3217C&gt;T</expression>
+</nucleotideexpression>
+<proteinexpression change="p.Arg1073Ter" sequenceaccession="NP_001341829" sequenceaccessionversion="NP_001341829.1" sequenceversion="1">
+<expression>NP_001341829.1:p.Arg1073Ter</expression>
+</proteinexpression>
+<molecularconsequence db="SO" id="SO:0001587" type="nonsense"></molecularconsequence>
+</hgvs>
+<hgvs type="coding">
+<nucleotideexpression change="c.3163C&gt;T" sequenceaccession="NM_001354901" sequenceaccessionversion="NM_001354901.2" sequenceversion="2">
+<expression>NM_001354901.2:c.3163C&gt;T</expression>
+</nucleotideexpression>
+<proteinexpression change="p.Arg1055Ter" sequenceaccession="NP_001341830" sequenceaccessionversion="NP_001341830.1" sequenceversion="1">
+<expression>NP_001341830.1:p.Arg1055Ter</expression>
+</proteinexpression>
+<molecularconsequence db="SO" id="SO:0001587" type="nonsense"></molecularconsequence>
+</hgvs>
+<hgvs type="coding">
+<nucleotideexpression change="c.3067C&gt;T" sequenceaccession="NM_001354902" sequenceaccessionversion="NM_001354902.2" sequenceversion="2">
+<expression>NM_001354902.2:c.3067C&gt;T</expression>
+</nucleotideexpression>
+<proteinexpression change="p.Arg1023Ter" sequenceaccession="NP_001341831" sequenceaccessionversion="NP_001341831.1" sequenceversion="1">
+<expression>NP_001341831.1:p.Arg1023Ter</expression>
+</proteinexpression>
+<molecularconsequence db="SO" id="SO:0001587" type="nonsense"></molecularconsequence>
+</hgvs>
+<hgvs type="coding">
+<nucleotideexpression change="c.3037C&gt;T" sequenceaccession="NM_001354903" sequenceaccessionversion="NM_001354903.2" sequenceversion="2">
+<expression>NM_001354903.2:c.3037C&gt;T</expression>
+</nucleotideexpression>
+<proteinexpression change="p.Arg1013Ter" sequenceaccession="NP_001341832" sequenceaccessionversion="NP_001341832.1" sequenceversion="1">
+<expression>NP_001341832.1:p.Arg1013Ter</expression>
+</proteinexpression>
+<molecularconsequence db="SO" id="SO:0001587" type="nonsense"></molecularconsequence>
+</hgvs>
+<hgvs type="coding">
+<nucleotideexpression change="c.2962C&gt;T" sequenceaccession="NM_001354904" sequenceaccessionversion="NM_001354904.2" sequenceversion="2">
+<expression>NM_001354904.2:c.2962C&gt;T</expression>
+</nucleotideexpression>
+<proteinexpression change="p.Arg988Ter" sequenceaccession="NP_001341833" sequenceaccessionversion="NP_001341833.1" sequenceversion="1">
+<expression>NP_001341833.1:p.Arg988Ter</expression>
+</proteinexpression>
+<molecularconsequence db="SO" id="SO:0001587" type="nonsense"></molecularconsequence>
+</hgvs>
+<hgvs type="coding">
+<nucleotideexpression change="c.2860C&gt;T" sequenceaccession="NM_001354905" sequenceaccessionversion="NM_001354905.2" sequenceversion="2">
+<expression>NM_001354905.2:c.2860C&gt;T</expression>
+</nucleotideexpression>
+<proteinexpression change="p.Arg954Ter" sequenceaccession="NP_001341834" sequenceaccessionversion="NP_001341834.1" sequenceversion="1">
+<expression>NP_001341834.1:p.Arg954Ter</expression>
+</proteinexpression>
+<molecularconsequence db="SO" id="SO:0001587" type="nonsense"></molecularconsequence>
+</hgvs>
+<hgvs type="coding">
+<nucleotideexpression change="c.2491C&gt;T" sequenceaccession="NM_001354906" sequenceaccessionversion="NM_001354906.2" sequenceversion="2">
+<expression>NM_001354906.2:c.2491C&gt;T</expression>
+</nucleotideexpression>
+<proteinexpression change="p.Arg831Ter" sequenceaccession="NP_001341835" sequenceaccessionversion="NP_001341835.1" sequenceversion="1">
+<expression>NP_001341835.1:p.Arg831Ter</expression>
+</proteinexpression>
+<molecularconsequence db="SO" id="SO:0001587" type="nonsense"></molecularconsequence>
+</hgvs>
+<hgvs type="genomic">
+<nucleotideexpression change="g.151414C&gt;T" sequenceaccession="NG_008481" sequenceaccessionversion="NG_008481.4" sequenceversion="4">
+<expression>NG_008481.4:g.151414C&gt;T</expression>
+</nucleotideexpression>
+</hgvs>
+</hgvslist>
+<xreflist>
+<xref db="ClinGen" id="CA10582306"></xref>
+<xref db="dbSNP" id="121913331" type="rs"></xref>
+</xreflist>
+</simpleallele>
+<reviewstatus>criteria provided, multiple submitters, no conflicts</reviewstatus>
+<rcvlist>
+<rcvaccession accession="RCV000228687" datelastevaluated="2018-12-18" interpretation="Pathogenic" reviewstatus="criteria provided, single submitter" submissioncount="1" title="NM_000038.6(APC):c.3340C&gt;T (p.Arg1114Ter) AND Familial adenomatous polyposis 1" version="6">
+<interpretedconditionlist traitsetid="6265">
+<interpretedcondition db="MedGen" id="C2713442">Familial adenomatous polyposis 1</interpretedcondition>
+</interpretedconditionlist>
+</rcvaccession>
+<rcvaccession accession="RCV000424284" datelastevaluated="2015-07-14" interpretation="Likely pathogenic" reviewstatus="no assertion criteria provided" submissioncount="1" title="NM_000038.6(APC):c.3340C&gt;T (p.Arg1114Ter) AND Neoplasm of the large intestine" version="1">
+<interpretedconditionlist traitsetid="31428">
+<interpretedcondition db="MedGen" id="C0009404">Neoplasm of the large intestine</interpretedcondition>
+</interpretedconditionlist>
+</rcvaccession>
+<rcvaccession accession="RCV000434269" datelastevaluated="2015-07-14" interpretation="Likely pathogenic" reviewstatus="no assertion criteria provided" submissioncount="1" title="NM_000038.6(APC):c.3340C&gt;T (p.Arg1114Ter) AND Lung adenocarcinoma" version="1">
+<interpretedconditionlist traitsetid="3349">
+<interpretedcondition db="MedGen" id="C0152013">Lung adenocarcinoma</interpretedcondition>
+</interpretedconditionlist>
+</rcvaccession>
+<rcvaccession accession="RCV000491362" datelastevaluated="2019-10-18" interpretation="Pathogenic" reviewstatus="criteria provided, multiple submitters, no conflicts" submissioncount="2" title="NM_000038.6(APC):c.3340C&gt;T (p.Arg1114Ter) AND Hereditary cancer-predisposing syndrome" version="2">
+<interpretedconditionlist traitsetid="13598">
+<interpretedcondition db="MedGen" id="C0027672">Hereditary cancer-predisposing syndrome</interpretedcondition>
+</interpretedconditionlist>
+</rcvaccession>
+<rcvaccession accession="RCV000501152" datelastevaluated="2019-02-27" interpretation="Pathogenic" reviewstatus="criteria provided, multiple submitters, no conflicts" submissioncount="2" title="NM_000038.6(APC):c.3340C&gt;T (p.Arg1114Ter) AND Familial multiple polyposis syndrome" version="4">
+<interpretedconditionlist traitsetid="8942">
+<interpretedcondition db="MedGen" id="C0032580">Familial multiple polyposis syndrome</interpretedcondition>
+</interpretedconditionlist>
+</rcvaccession>
+</rcvlist>
+<interpretations>
+<interpretation datelastevaluated="2019-10-18" numberofsubmissions="7" numberofsubmitters="6" type="Clinical significance">
+<description>Pathogenic</description>
+<citation type="general">
+<id source="PubMed">10646887</id>
+</citation>
+<citation type="general">
+<id source="PubMed">1316610</id>
+</citation>
+<citation type="general">
+<id source="PubMed">1338764</id>
+</citation>
+<citation type="general">
+<id source="PubMed">16134147</id>
+</citation>
+<citation type="general">
+<id source="PubMed">18433509</id>
+</citation>
+<citation type="general">
+<id source="PubMed">18948947</id>
+</citation>
+<citation type="general">
+<id source="PubMed">20223039</id>
+</citation>
+<citation type="general">
+<id source="PubMed">20685668</id>
+</citation>
+<citation type="general">
+<id source="PubMed">20924072</id>
+</citation>
+<citation type="general">
+<id source="PubMed">21901162</id>
+</citation>
+<citation type="general">
+<id source="PubMed">2281069</id>
+</citation>
+<citation type="general">
+<id source="PubMed">22987206</id>
+</citation>
+<citation type="general">
+<id source="PubMed">23159591</id>
+</citation>
+<citation type="general">
+<id source="PubMed">23700467</id>
+</citation>
+<citation type="general">
+<id source="PubMed">24664542</id>
+</citation>
+<citation type="general">
+<id source="PubMed">25157968</id>
+</citation>
+<citation type="general">
+<id source="PubMed">8187091</id>
+</citation>
+<citation type="general">
+<url>http://docm.genome.wustl.edu/variants/ENST00000257430:c.3340C&gt;T</url>
+</citation>
+<descriptionhistory dated="2018-05-29">
+<description>Pathogenic/Likely pathogenic</description>
+</descriptionhistory>
+<descriptionhistory dated="2017-03-07">
+<description>Pathogenic</description>
+</descriptionhistory>
+<conditionlist>
+<traitset id="3349" type="Disease">
+<trait id="6499" type="Disease">
+<name>
+<elementvalue type="Alternate">Adenocarcinoma of lung</elementvalue>
+<xref db="Genetic Alliance" id="Adenocarcinoma+of+Lung/222"></xref>
+</name>
+<name>
+<elementvalue type="Preferred">Lung adenocarcinoma</elementvalue>
+<xref db="Human Phenotype Ontology" id="HP:0030078"></xref>
+</name>
+<name>
+<elementvalue type="Alternate">Adenocarcinoma of lung, somatic</elementvalue>
+</name>
+<attributeset>
+<attribute integervalue="5742" type="GARD id"></attribute>
+<xref db="Office of Rare Diseases" id="5742"></xref>
+</attributeset>
+<citation abbrev="CAP/IASLC/AMP, 2013" type="practice guideline">
+<id source="PubMed">23562183</id>
+</citation>
+<citation abbrev="ASCO/CAP/IASLC/AMP, 2014" type="practice guideline">
+<id source="PubMed">25311215</id>
+</citation>
+<citation abbrev="KCPSG, 2014" type="practice guideline">
+<id source="PubMed">24627688</id>
+</citation>
+<citation abbrev="NICE, 2013" type="practice guideline">
+<url>https://www.nice.org.uk/guidance/dg9</url>
+</citation>
+<xref db="MedGen" id="C0152013"></xref>
+<xref db="MeSH" id="C538231"></xref>
+<xref db="MONDO" id="MONDO:0005061"></xref>
+<xref db="Human Phenotype Ontology" id="HP:0030078" type="primary"></xref>
+</trait>
+</traitset>
+<traitset id="31428" type="Disease">
+<trait id="31583" type="Disease">
+<name>
+<elementvalue type="Preferred">Neoplasm of the large intestine</elementvalue>
+<xref db="Human Phenotype Ontology" id="HP:0100834"></xref>
+<xref db="SNOMED CT" id="126837005"></xref>
+</name>
+<name>
+<elementvalue type="Alternate">Large intestine tumor</elementvalue>
+<xref db="Human Phenotype Ontology" id="HP:0100834"></xref>
+</name>
+<name>
+<elementvalue type="Alternate">Colorectal Neoplasms</elementvalue>
+</name>
+<citation abbrev="ESMO, 2012" type="practice guideline">
+<id source="PubMed">23012255</id>
+</citation>
+<xref db="MedGen" id="C0009404"></xref>
+<xref db="MeSH" id="D015179"></xref>
+<xref db="Human Phenotype Ontology" id="HP:0100834" type="primary"></xref>
+</trait>
+</traitset>
+<traitset id="8942" type="Disease">
+<trait id="6588" type="Disease">
+<name>
+<elementvalue type="Alternate">Familial adenomatous polyposis</elementvalue>
+</name>
+<name>
+<elementvalue type="Alternate">Adenomatous polyposis coli</elementvalue>
+</name>
+<name>
+<elementvalue type="Alternate">Familial adenomatous polyposis of the colon</elementvalue>
+</name>
+<name>
+<elementvalue type="Alternate">Familial polyposis of the colon</elementvalue>
+</name>
+<name>
+<elementvalue type="Alternate">Polyposis, adenomatous intestinal</elementvalue>
+</name>
+<name>
+<elementvalue type="Alternate">Adenomatous polyposis of the colon</elementvalue>
+</name>
+<name>
+<elementvalue type="Alternate">Familial intestinal polyposis</elementvalue>
+</name>
+<name>
+<elementvalue type="Alternate">Familial multiple polyposis</elementvalue>
+</name>
+<name>
+<elementvalue type="Alternate">Hereditary polyposis coli</elementvalue>
+</name>
+<name>
+<elementvalue type="Preferred">Familial multiple polyposis syndrome</elementvalue>
+<xref db="SNOMED CT" id="72900001"></xref>
+</name>
+<name>
+<elementvalue type="Alternate">Familial polyposis</elementvalue>
+</name>
+<symbol>
+<elementvalue type="Preferred">FAP</elementvalue>
+</symbol>
+<symbol>
+<elementvalue type="Alternate">FPC</elementvalue>
+</symbol>
+<attributeset>
+<attribute type="public definition">Familial adenomatous polyposis (FAP) is an inherited disorder characterized by cancer of the large intestine (colon) and rectum. People with the classic type of familial adenomatous polyposis may begin to develop multiple noncancerous (benign) growths (polyps) in the colon as early as their teenage years. Unless the colon is removed, these polyps will become malignant (cancerous). The average age at which an individual develops colon cancer in classic familial adenomatous polyposis is 39 years. Some people have a variant of the disorder, called attenuated familial adenomatous polyposis, in which polyp growth is delayed. The average age of colorectal cancer onset for attenuated familial adenomatous polyposis is 55 years.In people with classic familial adenomatous polyposis, the number of polyps increases with age, and hundreds to thousands of polyps can develop in the colon. Also of particular significance are noncancerous growths called desmoid tumors. These fibrous tumors usually occur in the tissue covering the intestines and may be provoked by surgery to remove the colon. Desmoid tumors tend to recur after they are surgically removed. In both classic familial adenomatous polyposis and its attenuated variant, benign and malignant tumors are sometimes found in other places in the body, including the duodenum (a section of the small intestine), stomach, bones, skin, and other tissues. People who have colon polyps as well as growths outside the colon are sometimes described as having Gardner syndrome.A milder type of familial adenomatous polyposis, called autosomal recessive familial adenomatous polyposis, has also been identified. People with the autosomal recessive type of this disorder have fewer polyps than those with the classic type. Fewer than 100 polyps typically develop, rather than hundreds or thousands. The autosomal recessive type of this disorder is caused by mutations in a different gene than the classic and attenuated types of familial adenomatous polyposis.</attribute>
+<xref db="Genetics Home Reference" id="familial-adenomatous-polyposis"></xref>
+</attributeset>
+<attributeset>
+<attribute integervalue="273" type="disease mechanism">loss of function</attribute>
+<xref db="Genetic Testing Registry (GTR)" id="GTR000500599"></xref>
+<xref db="Genetic Testing Registry (GTR)" id="GTR000528529"></xref>
+<xref db="Genetic Testing Registry (GTR)" id="GTR000528534"></xref>
+<xref db="Genetic Testing Registry (GTR)" id="GTR000529017"></xref>
+<xref db="Genetic Testing Registry (GTR)" id="GTR000552183"></xref>
+<xref db="Genetic Testing Registry (GTR)" id="GTR000552184"></xref>
+</attributeset>
+<citation abbrev="Decipher" type="review">
+<url>https://decipher.sanger.ac.uk/syndrome/49</url>
+</citation>
+<citation abbrev="Mallorca, 2008" type="practice guideline">
+<id source="PubMed">18194984</id>
+</citation>
+<citation abbrev="ACMG/NSGC, 2015" type="practice guideline">
+<id source="PubMed">25394175</id>
+</citation>
+<xref db="Orphanet" id="733"></xref>
+<xref db="MedGen" id="C0032580"></xref>
+<xref db="MONDO" id="MONDO:0021055"></xref>
+<xref db="OMIM" id="PS175100" type="Phenotypic series"></xref>
+</trait>
+</traitset>
+<traitset id="13598" type="Disease">
+<trait id="18746" type="Disease">
+<name>
+<elementvalue type="Alternate">Neoplastic Syndromes, Hereditary</elementvalue>
+<xref db="MeSH" id="D009386"></xref>
+</name>
+<name>
+<elementvalue type="Preferred">Hereditary cancer-predisposing syndrome</elementvalue>
+<xref db="SNOMED CT" id="699346009"></xref>
+</name>
+<name>
+<elementvalue type="Alternate">Tumor predisposition</elementvalue>
+</name>
+<name>
+<elementvalue type="Alternate">Cancer predisposition</elementvalue>
+<xref db="Genetic Alliance" id="Hereditary+Cancer/3345"></xref>
+</name>
+<attributeset>
+<attribute type="keyword">Neoplasm</attribute>
+</attributeset>
+<attributeset>
+<attribute type="keyword">Hereditary cancer syndrome</attribute>
+</attributeset>
+<citation abbrev="IARC, 2008" type="practice guideline">
+<id source="pmc">3075918</id>
+</citation>
+<citation abbrev="ACMG/NSGC, 2015" type="practice guideline">
+<id source="PubMed">25394175</id>
+</citation>
+<xref db="Orphanet" id="140162"></xref>
+<xref db="MedGen" id="C0027672"></xref>
+<xref db="MONDO" id="MONDO:0015356"></xref>
+</trait>
+</traitset>
+<traitset id="6265" type="Disease">
+<trait id="15929" type="Disease">
+<name>
+<elementvalue type="Alternate">POLYPOSIS, ADENOMATOUS INTESTINAL</elementvalue>
+<xref db="OMIM" id="175100" type="MIM"></xref>
+</name>
+<name>
+<elementvalue type="Alternate">APC-Associated Polyposis Conditions</elementvalue>
+<xref db="GeneReviews" id="NBK1345"></xref>
+</name>
+<name>
+<elementvalue type="Alternate">FAMILIAL ADENOMATOUS POLYPOSIS 1, ATTENUATED</elementvalue>
+<xref db="OMIM" id="611731.0034" type="Allelic variant"></xref>
+<xref db="OMIM" id="611731.0036" type="Allelic variant"></xref>
+<xref db="OMIM" id="611731.0042" type="Allelic variant"></xref>
+<xref db="OMIM" id="611731.0049" type="Allelic variant"></xref>
+<xref db="OMIM" id="611731.0021" type="Allelic variant"></xref>
+<xref db="OMIM" id="611731.0028" type="Allelic variant"></xref>
+<xref db="OMIM" id="611731.0035" type="Allelic variant"></xref>
+<xref db="OMIM" id="611731.0038" type="Allelic variant"></xref>
+<xref db="OMIM" id="611731.0043" type="Allelic variant"></xref>
+</name>
+<name>
+<elementvalue type="Preferred">Familial adenomatous polyposis 1</elementvalue>
+</name>
+<symbol>
+<elementvalue type="Preferred">FAP1</elementvalue>
+<xref db="OMIM" id="175100" type="MIM"></xref>
+</symbol>
+<attributeset>
+<attribute type="public definition">APC-associated polyposis conditions include: familial adenomatous polyposis (FAP), attenuated FAP, and gastric adenocarcinoma and proximal polyposis of the stomach (GAPPS). FAP is a colon cancer predisposition syndrome in which hundreds to thousands of adenomatous colonic polyps develop, beginning, on average, at age 16 years (range 7-36 years). By age 35 years, 95% of individuals with FAP have polyps; without colectomy, colon cancer is inevitable. The mean age of colon cancer diagnosis in untreated individuals is 39 years (range 34-43 years). Extracolonic manifestations are variably present and include: polyps of the gastric fundus and duodenum, osteomas, dental anomalies, congenital hypertrophy of the retinal pigment epithelium (CHRPE), soft tissue tumors, desmoid tumors, and associated cancers. Attenuated FAP is characterized by multiple colonic polyps (average of 30), more proximally located polyps, and a diagnosis of colon cancer at a later age than in FAP. Certain extracolonic manifestations, such as gastric and duodenal polyps or cancers, are variably present in attenuated FAP; risk management may be substantially different between FAP and attenuated FAP. GAPPS is characterized by gastric fundic gland polyposis, increased risk of gastric cancer, and limited colonic involvement in most individuals reported.</attribute>
+<xref db="GeneReviews" id="NBK1345"></xref>
+</attributeset>
+<attributeset>
+<attribute integervalue="273" type="disease mechanism">loss of function</attribute>
+<xref db="Genetic Testing Registry (GTR)" id="GTR000500894"></xref>
+<xref db="Genetic Testing Registry (GTR)" id="GTR000172265"></xref>
+<xref db="Genetic Testing Registry (GTR)" id="GTR000512300"></xref>
+<xref db="Genetic Testing Registry (GTR)" id="GTR000515899"></xref>
+<xref db="Genetic Testing Registry (GTR)" id="GTR000522559"></xref>
+<xref db="Genetic Testing Registry (GTR)" id="GTR000528912"></xref>
+<xref db="Genetic Testing Registry (GTR)" id="GTR000530120"></xref>
+<xref db="Genetic Testing Registry (GTR)" id="GTR000530202"></xref>
+<xref db="Genetic Testing Registry (GTR)" id="GTR000552245"></xref>
+<xref db="Genetic Testing Registry (GTR)" id="GTR000569916"></xref>
+<xref db="Genetic Testing Registry (GTR)" id="GTR000570011"></xref>
+<xref db="Genetic Testing Registry (GTR)" id="GTR000501794"></xref>
+<xref db="Genetic Testing Registry (GTR)" id="GTR000520077"></xref>
+<xref db="Genetic Testing Registry (GTR)" id="GTR000520868"></xref>
+<xref db="Genetic Testing Registry (GTR)" id="GTR000520869"></xref>
+<xref db="Genetic Testing Registry (GTR)" id="GTR000520872"></xref>
+<xref db="Genetic Testing Registry (GTR)" id="GTR000527984"></xref>
+<xref db="Genetic Testing Registry (GTR)" id="GTR000552290"></xref>
+<xref db="Genetic Testing Registry (GTR)" id="GTR000552303"></xref>
+<xref db="Genetic Testing Registry (GTR)" id="GTR000591173"></xref>
+<xref db="Genetic Testing Registry (GTR)" id="GTR000501393"></xref>
+<xref db="Genetic Testing Registry (GTR)" id="GTR000508954"></xref>
+<xref db="Genetic Testing Registry (GTR)" id="GTR000520047"></xref>
+<xref db="Genetic Testing Registry (GTR)" id="GTR000520069"></xref>
+<xref db="Genetic Testing Registry (GTR)" id="GTR000520394"></xref>
+<xref db="Genetic Testing Registry (GTR)" id="GTR000520870"></xref>
+<xref db="Genetic Testing Registry (GTR)" id="GTR000521915"></xref>
+<xref db="Genetic Testing Registry (GTR)" id="GTR000529017"></xref>
+<xref db="Genetic Testing Registry (GTR)" id="GTR000530028"></xref>
+<xref db="Genetic Testing Registry (GTR)" id="GTR000530118"></xref>
+<xref db="Genetic Testing Registry (GTR)" id="GTR000321103"></xref>
+<xref db="Genetic Testing Registry (GTR)" id="GTR000330056"></xref>
+<xref db="Genetic Testing Registry (GTR)" id="GTR000501394"></xref>
+<xref db="Genetic Testing Registry (GTR)" id="GTR000512645"></xref>
+<xref db="Genetic Testing Registry (GTR)" id="GTR000515534"></xref>
+<xref db="Genetic Testing Registry (GTR)" id="GTR000520865"></xref>
+<xref db="Genetic Testing Registry (GTR)" id="GTR000527982"></xref>
+<xref db="Genetic Testing Registry (GTR)" id="GTR000558907"></xref>
+</attributeset>
+<citation abbrev="GeneReviews" type="review">
+<id source="PubMed">20301519</id>
+<id source="BookShelf">NBK1345</id>
+</citation>
+<citation abbrev="ASCRS, 2001" type="practice guideline">
+<id source="PubMed">11598466</id>
+</citation>
+<citation abbrev="NSGC, 2004" type="practice guideline">
+<id source="PubMed">15604628</id>
+</citation>
+<citation abbrev="EuroGenetest, 2011" type="Translational/Evidence-based">
+<id source="PubMed">21368914</id>
+</citation>
+<citation abbrev="ACMG, 2013" type="Recommendation">
+<id source="PubMed">23788249</id>
+</citation>
+<citation abbrev="ASCO/ESMO, 2015" type="practice guideline">
+<id source="PubMed">25452455</id>
+</citation>
+<citation abbrev="ACMG, 2014" type="practice guideline">
+<id source="PubMed">24310308</id>
+</citation>
+<citation abbrev="ACG, 2015" type="practice guideline">
+<id source="PubMed">25645574</id>
+</citation>
+<citation abbrev="ACMG, 2015" type="Recommendation">
+<id source="PubMed">25356965</id>
+</citation>
+<citation abbrev="ACMG, 2016" type="Recommendation">
+<id source="PubMed">27854360</id>
+<id source="DOI">10.1038/gim.2016.190</id>
+</citation>
+<xref db="MedGen" id="C2713442"></xref>
+<xref db="MONDO" id="MONDO:0021056"></xref>
+<xref db="OMIM" id="175100" type="MIM"></xref>
+</trait>
+</traitset>
+</conditionlist>
+</interpretation>
+</interpretations>
+<clinicalassertionlist>
+<clinicalassertion datecreated="2017-03-02" datelastupdated="2020-03-26" id="970272" submissiondate="2016-07-18">
+<clinvarsubmissionid localkey="ENST00000257430:c.3340C&gt;T|MeSH:D015179" submittedassembly="GRCh37"></clinvarsubmissionid>
+<clinvaraccession accession="SCV000504997" orgabbreviation="DoCM" organizationcategory="resource" orgid="505871" submittername="Database of Curated Mutations (DoCM)" type="SCV" version="1"></clinvaraccession>
+<recordstatus>current</recordstatus>
+<reviewstatus>no assertion criteria provided</reviewstatus>
+<interpretation datelastevaluated="2015-07-14">
+<description>Likely pathogenic</description>
+<citation>
+<id source="PubMed">23700467</id>
+</citation>
+<citation>
+<id source="PubMed">21901162</id>
+</citation>
+<citation>
+<id source="PubMed">25157968</id>
+</citation>
+<citation>
+<id source="PubMed">2281069</id>
+</citation>
+<citation>
+<id source="PubMed">8187091</id>
+</citation>
+</interpretation>
+<assertion>variation to disease</assertion>
+<attributeset>
+<attribute type="ModeOfInheritance">Somatic mutation</attribute>
+</attributeset>
+<observedinlist>
+<observedin>
+<sample>
+<origin>somatic</origin>
+<species taxonomyid="9606">human</species>
+<affectedstatus>yes</affectedstatus>
+</sample>
+<method>
+<methodtype>literature only</methodtype>
+</method>
+<observeddata>
+<attribute type="Description">not provided</attribute>
+</observeddata>
+</observedin>
+</observedinlist>
+<simpleallele>
+<varianttype>Variation</varianttype>
+<location>
+<sequencelocation alternateallele="T" assembly="GRCh37" chr="5" referenceallele="C" start="112174631" stop="112174631" variantlength="1"></sequencelocation>
+</location>
+</simpleallele>
+<traitset type="Disease">
+<trait type="Disease">
+<xref db="MeSH" id="D015179"></xref>
+</trait>
+</traitset>
+<citation>
+<url>http://docm.genome.wustl.edu/variants/ENST00000257430:c.3340C&gt;T</url>
+</citation>
+<studydescription>This is the initial submission of DoCM to ClinVar. DoCM is the database of curated mutations in cancer and seeks to leverage the community to outline all functionally important somatic cancer variants in the literature.</studydescription>
+<submissionnamelist>
+<submissionname>DoCM_7-13-16</submissionname>
+</submissionnamelist>
+</clinicalassertion>
+<clinicalassertion datecreated="2017-03-02" datelastupdated="2020-03-26" id="970273" submissiondate="2016-07-18">
+<clinvarsubmissionid localkey="ENST00000257430:c.3340C&gt;T|MeSH:C538231" submittedassembly="GRCh37"></clinvarsubmissionid>
+<clinvaraccession accession="SCV000504998" orgabbreviation="DoCM" organizationcategory="resource" orgid="505871" submittername="Database of Curated Mutations (DoCM)" type="SCV" version="1"></clinvaraccession>
+<recordstatus>current</recordstatus>
+<reviewstatus>no assertion criteria provided</reviewstatus>
+<interpretation datelastevaluated="2015-07-14">
+<description>Likely pathogenic</description>
+<citation>
+<id source="PubMed">25157968</id>
+</citation>
+<citation>
+<id source="PubMed">18948947</id>
+</citation>
+</interpretation>
+<assertion>variation to disease</assertion>
+<attributeset>
+<attribute type="ModeOfInheritance">Somatic mutation</attribute>
+</attributeset>
+<observedinlist>
+<observedin>
+<sample>
+<origin>somatic</origin>
+<species taxonomyid="9606">human</species>
+<affectedstatus>yes</affectedstatus>
+</sample>
+<method>
+<methodtype>literature only</methodtype>
+</method>
+<observeddata>
+<attribute type="Description">not provided</attribute>
+</observeddata>
+</observedin>
+</observedinlist>
+<simpleallele>
+<varianttype>Variation</varianttype>
+<location>
+<sequencelocation alternateallele="T" assembly="GRCh37" chr="5" referenceallele="C" start="112174631" stop="112174631" variantlength="1"></sequencelocation>
+</location>
+</simpleallele>
+<traitset type="Disease">
+<trait type="Disease">
+<xref db="MeSH" id="C538231"></xref>
+</trait>
+</traitset>
+<citation>
+<url>http://docm.genome.wustl.edu/variants/ENST00000257430:c.3340C&gt;T</url>
+</citation>
+<studydescription>This is the initial submission of DoCM to ClinVar. DoCM is the database of curated mutations in cancer and seeks to leverage the community to outline all functionally important somatic cancer variants in the literature.</studydescription>
+<submissionnamelist>
+<submissionname>DoCM_7-13-16</submissionname>
+</submissionnamelist>
+</clinicalassertion>
+<clinicalassertion datecreated="2017-08-25" datelastupdated="2020-10-08" id="1147581" submissiondate="2017-10-30">
+<clinvarsubmissionid localkey="NM_000038.5:c.3340C&gt;T|MedGen:CN240755" submittedassembly="GRCh37"></clinvarsubmissionid>
+<clinvaraccession accession="SCV000591137" orgabbreviation="PLM-SHS" organizationcategory="laboratory" orgid="506152" submittername="Department of Pathology and Laboratory Medicine,Sinai Health System" type="SCV" version="2"></clinvaraccession>
+<recordstatus>current</recordstatus>
+<reviewstatus>criteria provided, single submitter</reviewstatus>
+<interpretation datelastevaluated="2015-08-31">
+<description>Pathogenic</description>
+</interpretation>
+<assertion>variation to disease</assertion>
+<attributeset>
+<attribute type="AssertionMethod">ACMG Guidelines, 2015</attribute>
+<citation>
+<id source="PubMed">25741868</id>
+</citation>
+</attributeset>
+<observedinlist>
+<observedin>
+<sample>
+<origin>germline</origin>
+<species taxonomyid="9606">human</species>
+<affectedstatus>yes</affectedstatus>
+</sample>
+<method>
+<methodtype>clinical testing</methodtype>
+</method>
+<observeddata>
+<attribute type="Description">not provided</attribute>
+</observeddata>
+</observedin>
+</observedinlist>
+<simpleallele>
+<genelist>
+<gene symbol="APC"></gene>
+</genelist>
+<varianttype>Variation</varianttype>
+<attributeset>
+<attribute type="HGVS">NM_000038.5:c.3340C&gt;T</attribute>
+</attributeset>
+</simpleallele>
+<traitset type="Disease">
+<trait type="Disease">
+<xref db="MedGen" id="CN240755" type="CUI"></xref>
+</trait>
+</traitset>
+<studyname>Canadian Open Genetics Repository (COGR)</studyname>
+<submissionnamelist>
+<submissionname>SHS20170111_update</submissionname>
+</submissionnamelist>
+</clinicalassertion>
+<clinicalassertion datecreated="2016-06-29" datelastupdated="2020-03-26" id="537953" submissiondate="2019-03-28">
+<clinvarsubmissionid localkey="238355|MedGen:C2713442" submittedassembly="GRCh37"></clinvarsubmissionid>
+<clinvaraccession accession="SCV000282738" organizationcategory="laboratory" orgid="500031" submittername="Invitae" type="SCV" version="6"></clinvaraccession>
+<recordstatus>current</recordstatus>
+<reviewstatus>criteria provided, single submitter</reviewstatus>
+<interpretation datelastevaluated="2018-12-18">
+<description>Pathogenic</description>
+<citation>
+<id source="PubMed">20685668</id>
+</citation>
+<citation>
+<id source="PubMed">1338764</id>
+</citation>
+<citation>
+<id source="PubMed">24664542</id>
+</citation>
+<citation>
+<id source="PubMed">1316610</id>
+</citation>
+<citation>
+<id source="PubMed">20223039</id>
+</citation>
+<citation>
+<id source="PubMed">16134147</id>
+</citation>
+<citation>
+<id source="PubMed">23159591</id>
+</citation>
+<comment>This sequence change results in a premature translational stop signal in the last exon of the APC mRNA at codon 1114 (p.Arg1114*). While this is not anticipated to result in nonsense mediated decay, it is expected to delete the last 1730 amino acids of the APC protein. This variant is not present in population databases (ExAC no frequency). This variant has been reported in patients affected with familial adenomatous polyposis (FAP) and attenuated FAP (PMID: 1338764, 20685668, 20223039, 16134147). ClinVar contains an entry for this variant (Variation ID: 236589). Many truncation downstream of this variant has been determined to be pathogenic (PMID: 20223039, 1316610, 23159591, 24664542). This suggests that deletion of this region of the APC protein is causative of disease. Loss-of-function variants in APC are known to be pathogenic (PMID: 17963004, 20685668). For these reasons, this variant has been classified as Pathogenic.</comment>
+</interpretation>
+<assertion>variation to disease</assertion>
+<attributeset>
+<attribute type="AssertionMethod">Invitae Variant Classification Sherloc (09022015)</attribute>
+<citation>
+<id source="PubMed">28492532</id>
+</citation>
+</attributeset>
+<observedinlist>
+<observedin>
+<sample>
+<origin>germline</origin>
+<species taxonomyid="9606">human</species>
+<affectedstatus>unknown</affectedstatus>
+</sample>
+<method>
+<methodtype>clinical testing</methodtype>
+</method>
+<observeddata>
+<attribute type="Description">not provided</attribute>
+</observeddata>
+</observedin>
+</observedinlist>
+<simpleallele>
+<genelist>
+<gene symbol="APC"></gene>
+</genelist>
+<varianttype>Variation</varianttype>
+<attributeset>
+<attribute type="HGVS">NM_000038.5:c.3340C&gt;T</attribute>
+</attributeset>
+</simpleallele>
+<traitset type="Disease">
+<trait type="Disease">
+<name>
+<elementvalue type="Preferred">Familial adenomatous polyposis 1</elementvalue>
+</name>
+<xref db="MedGen" id="C2713442" type="CUI"></xref>
+</trait>
+</traitset>
+<citation type="general">
+<id source="PubMed">28492532</id>
+</citation>
+<submissionnamelist>
+<submissionname>SUB5371970</submissionname>
+</submissionnamelist>
+</clinicalassertion>
+<clinicalassertion datecreated="2020-06-19" datelastupdated="2020-06-22" id="2656043" submissiondate="2020-05-19">
+<clinvarsubmissionid localkey="Db4KrQBSZeoE7-orUyypkc4jdGwFj472knnGDdT0Yh4|MedGen:C0027672" submittedassembly="GRCh37"></clinvarsubmissionid>
+<clinvaraccession accession="SCV001347727" organizationcategory="laboratory" orgid="505849" submittername="Color" type="SCV" version="1"></clinvaraccession>
+<recordstatus>current</recordstatus>
+<reviewstatus>criteria provided, single submitter</reviewstatus>
+<interpretation datelastevaluated="2019-10-18">
+<description>Pathogenic</description>
+</interpretation>
+<assertion>variation to disease</assertion>
+<attributeset>
+<attribute type="AssertionMethod">ACMG Guidelines, 2015</attribute>
+<citation>
+<id source="PubMed">25741868</id>
+</citation>
+</attributeset>
+<observedinlist>
+<observedin>
+<sample>
+<origin>germline</origin>
+<species taxonomyid="9606">human</species>
+<affectedstatus>unknown</affectedstatus>
+</sample>
+<method>
+<typeplatform>NGS</typeplatform>
+<methodtype>clinical testing</methodtype>
+</method>
+<observeddata>
+<attribute type="Description">not provided</attribute>
+</observeddata>
+</observedin>
+</observedinlist>
+<simpleallele>
+<genelist>
+<gene symbol="APC"></gene>
+</genelist>
+<varianttype>Variation</varianttype>
+<attributeset>
+<attribute type="HGVS">NM_000038.5:c.3340C&gt;T</attribute>
+</attributeset>
+</simpleallele>
+<traitset type="Disease">
+<trait type="Disease">
+<name>
+<elementvalue type="Preferred">Hereditary cancer-predisposing syndrome</elementvalue>
+</name>
+<xref db="MedGen" id="C0027672" type="CUI"></xref>
+</trait>
+</traitset>
+<comment>This variant changes 1 nucleotide in exon 16 of the APC gene, creating a premature translation stop signal. This variant is expected to result in an absent or non-functional protein product. Splice site prediction tools suggest that this variant may not impact RNA splicing. To our knowledge, functional studies have not been performed for this variant. This variant has been reported in individuals affected with polyposis and familial adenomatous polyposis (PMID: 1338764, 20685668, 20223039, 16134147). This variant has not been identified in the general population by the Genome Aggregation Database (gnomAD). Loss of APC function is a known mechanism of disease. Based on the available evidence, this variant is classified as Pathogenic.</comment>
+<submissionnamelist>
+<submissionname>Color Genomics - ClinVar Submission - May2020 - SUB747</submissionname>
+</submissionnamelist>
+</clinicalassertion>
+<clinicalassertion datecreated="2020-06-21" datelastupdated="2020-10-08" id="2669474" submissiondate="2020-03-06">
+<clinvarsubmissionid localkey="NM_000038.5:c.3340C&gt;T|MedGen:CN240755" submittedassembly="GRCh37"></clinvarsubmissionid>
+<clinvaraccession accession="SCV001361155" orgabbreviation="IG" organizationcategory="laboratory" orgid="500026" submittername="Integrated Genetics/Laboratory Corporation of America" type="SCV" version="1"></clinvaraccession>
+<recordstatus>current</recordstatus>
+<reviewstatus>criteria provided, single submitter</reviewstatus>
+<interpretation datelastevaluated="2019-02-27">
+<description>Pathogenic</description>
+<citation>
+<id source="PubMed">20223039</id>
+</citation>
+<citation>
+<id source="PubMed">18433509</id>
+</citation>
+<citation>
+<id source="PubMed">10646887</id>
+</citation>
+<comment>Variant summary: APC c.3340C&gt;T (p.Arg1114X) results in a premature termination codon, predicted to cause a truncation of the encoded protein or absence of the protein due to nonsense mediated decay, which are commonly known mechanisms for disease. Truncations downstream of this position have been classified as pathogenic by our laboratory (c.3927_3931delAAAGA, p.Glu1309fsX4; c.4393_4394dupAG, p.Ser1465fsX9; c.5582_5585delCTTT, p.Ser1861fsX1). The variant was absent in 245192 control chromosomes. c.3340C&gt;T has been reported in the literature in multiple individuals affected with Familial Adenomatous Polyposis (Ficari_2000, Friedl_2005, Kanter-Smoler_2008). These data indicate that the variant is very likely to be associated with disease. To our knowledge, no experimental evidence demonstrating an impact on protein function has been reported. Three clinical diagnostic laboratories have submitted clinical-significance assessments for this variant to ClinVar after 2014 without evidence for independent evaluation. All laboratories classified the variant as pathogenic. Based on the evidence outlined above, the variant was classified as pathogenic.</comment>
+</interpretation>
+<assertion>variation to disease</assertion>
+<attributeset>
+<attribute type="AssertionMethod">LabCorp Variant Classification Summary - May 2015</attribute>
+<citation>
+<url>https://submit.ncbi.nlm.nih.gov/ft/byid/pttb9itm/labcorp_variant_classification_method_-_may_2015.pdf</url>
+</citation>
+</attributeset>
+<observedinlist>
+<observedin>
+<sample>
+<origin>germline</origin>
+<species taxonomyid="9606">human</species>
+<affectedstatus>unknown</affectedstatus>
+</sample>
+<method>
+<methodtype>clinical testing</methodtype>
+</method>
+<observeddata>
+<attribute type="Description">not provided</attribute>
+</observeddata>
+</observedin>
+</observedinlist>
+<simpleallele>
+<genelist>
+<gene symbol="APC"></gene>
+</genelist>
+<varianttype>Variation</varianttype>
+<attributeset>
+<attribute type="HGVS">NM_000038.5:c.3340C&gt;T</attribute>
+</attributeset>
+</simpleallele>
+<traitset type="Disease">
+<trait type="Disease">
+<name>
+<elementvalue type="Preferred">Familial adenomatous polyposis</elementvalue>
+</name>
+<xref db="MedGen" id="CN240755" type="CUI"></xref>
+</trait>
+</traitset>
+<submissionnamelist>
+<submissionname>SUB6913290</submissionname>
+</submissionnamelist>
+</clinicalassertion>
+<clinicalassertion datecreated="2017-06-23" datelastupdated="2020-12-07" id="1129531" submissiondate="2020-11-30">
+<clinvarsubmissionid localkey="a86809" localkeyissubmitted="1" submittedassembly="GRCh37"></clinvarsubmissionid>
+<clinvaraccession accession="SCV000579776" organizationcategory="laboratory" orgid="61756" submittername="Ambry Genetics" type="SCV" version="4"></clinvaraccession>
+<recordstatus>current</recordstatus>
+<reviewstatus>criteria provided, single submitter</reviewstatus>
+<interpretation datelastevaluated="2019-03-22">
+<description>Pathogenic</description>
+<citation>
+<id source="PubMed">1338764</id>
+</citation>
+<citation>
+<id source="PubMed">20223039</id>
+</citation>
+<citation>
+<id source="PubMed">20924072</id>
+</citation>
+<citation>
+<id source="PubMed">22987206</id>
+</citation>
+<comment>The p.R1114* pathogenic mutation (also known as c.3340C&gt;T), located in coding exon 15 of the APC gene, results from a C to T substitution at nucleotide position 3340. This changes the amino acid from an arginine to a stop codon within coding exon 15. This mutation has been reported in multiple families with familial adenomatous polyposis (FAP) (Nagase H et al. Hum. Mutat. 1992;1:467-73; Friedl W et al. Hered Cancer Clin Pract. 2005 Sep;3:95-114; Rivera B et al. Ann. Oncol. 2011 Apr;22:903-9; Schwarzov&amp;aacute; L et al. Fam. Cancer, 2013 Mar;12:35-42). In addition to the clinical data presented in the literature, this alteration is expected to result in loss of function by premature protein truncation. As such, this alteration is interpreted as a disease-causing mutation.</comment>
+</interpretation>
+<assertion>variation to disease</assertion>
+<attributeset>
+<attribute type="AssertionMethod">Ambry Autosomal Dominant and X-Linked criteria (3/2017)</attribute>
+<citation>
+<url>https://submit.ncbi.nlm.nih.gov/ft/byid/uwtx4ijy/ad_xl_classificationscheme_03.2017_ambry.pdf</url>
+</citation>
+</attributeset>
+<observedinlist>
+<observedin>
+<sample>
+<origin>germline</origin>
+<species taxonomyid="9606">human</species>
+<affectedstatus>unknown</affectedstatus>
+<numbertested>1</numbertested>
+</sample>
+<method>
+<methodtype>clinical testing</methodtype>
+</method>
+<observeddata>
+<attribute integervalue="1" type="VariantAlleles"></attribute>
+</observeddata>
+</observedin>
+</observedinlist>
+<simpleallele>
+<genelist>
+<gene symbol="APC"></gene>
+</genelist>
+<varianttype>Variation</varianttype>
+<attributeset>
+<attribute type="HGVS">NM_000038.5:c.3340C&gt;T</attribute>
+</attributeset>
+</simpleallele>
+<traitset type="Disease">
+<trait type="Disease">
+<name>
+<elementvalue type="Preferred">Hereditary cancer-predisposing syndrome</elementvalue>
+</name>
+<xref db="MedGen" id="C0027672" type="CUI"></xref>
+</trait>
+</traitset>
+<submissionnamelist>
+<submissionname>NonExomeUpdate_081220AmbryReport</submissionname>
+</submissionnamelist>
+</clinicalassertion>
+</clinicalassertionlist>
+<traitmappinglist>
+<traitmapping clinicalassertionid="970273" mappingref="MeSH" mappingtype="XRef" mappingvalue="C538231" traittype="Disease">
+<medgen cui="C0152013" name="Lung adenocarcinoma"></medgen>
+</traitmapping>
+<traitmapping clinicalassertionid="2669474" mappingref="Preferred" mappingtype="Name" mappingvalue="Familial adenomatous polyposis" traittype="Disease">
+<medgen cui="C0032580" name="Familial multiple polyposis syndrome"></medgen>
+</traitmapping>
+<traitmapping clinicalassertionid="1129531" mappingref="Preferred" mappingtype="Name" mappingvalue="Hereditary cancer-predisposing syndrome" traittype="Disease">
+<medgen cui="C0027672" name="Hereditary cancer-predisposing syndrome"></medgen>
+</traitmapping>
+<traitmapping clinicalassertionid="1147581" mappingref="MedGen" mappingtype="XRef" mappingvalue="CN240755" traittype="Disease">
+<medgen cui="C0032580" name="Familial multiple polyposis syndrome"></medgen>
+</traitmapping>
+<traitmapping clinicalassertionid="970272" mappingref="MeSH" mappingtype="XRef" mappingvalue="D015179" traittype="Disease">
+<medgen cui="C0009404" name="Neoplasm of the large intestine"></medgen>
+</traitmapping>
+<traitmapping clinicalassertionid="2656043" mappingref="Preferred" mappingtype="Name" mappingvalue="Hereditary cancer-predisposing syndrome" traittype="Disease">
+<medgen cui="C0027672" name="Hereditary cancer-predisposing syndrome"></medgen>
+</traitmapping>
+<traitmapping clinicalassertionid="537953" mappingref="Preferred" mappingtype="Name" mappingvalue="Familial adenomatous polyposis 1" traittype="Disease">
+<medgen cui="C2713442" name="Familial adenomatous polyposis 1"></medgen>
+</traitmapping>
+</traitmappinglist>
+</interpretedrecord>
+</variationarchive>
+</clinvarresult-set></body></html>
