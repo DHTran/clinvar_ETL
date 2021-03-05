@@ -1,0 +1,119 @@
+import json
+import pandas as pd
+import pickle
+import os
+import simplejson as sjson
+from Bio import Entrez
+from collections import Counter
+from datetime import date
+# from dotenv import load_dotenv
+from pathlib import Path
+from clinvar_datapull import ClinVar_Datapull
+from clinvar_parse import ClinVar_Parse
+from clinvar_ETL_constants import DATAFILES_PATH, DATAPULL_JSONS_PATH
+from clinvar_ETL_constants import PARSE_JSONS_PATH, PARSE_CSVS_PATH
+# from drive_api import Drive_Api
+# max number of retries after failed HTTP failures
+Entrez.max_tries = 5
+eutils_url = 'https://eutils.ncbi.nlm.nih.gov/entrez/eutils/'
+secrets_path = Path("~/secrets")
+
+data = ClinVar_Datapull(gene_panel='acmg59',
+                        test_flag=False, overwrite=False)
+
+# removed omim filter before parsing
+parse = ClinVar_Parse(
+    overwrite=False, test_flag=False, genes=data.genes)
+
+parse.get_variation_data()
+parse.convert_parse_to_csv()
+
+def load_gene_json(self, path, file_filter=None):
+    """loads files based on file_filter and yields gene, data
+    (assumes json encodes a dict with {gene: clinvar_data}
+
+    Arg:
+        file_filter = str to search for directory with glob
+
+        path = path to directory with target files
+    """
+    print(f"in load_gene_json")
+    print(f"filtering in {path} for {file_filter}")
+    for file_ in Path(path).glob(file_filter):
+        if 'parse' in file_.stem:
+            # from parse json
+            gene = file_.stem[:-6]
+        else:
+            # from datapull json
+            gene = file_.stem
+        if gene in self.gene_list:
+            # checks for gene.json with gene in panel list
+            print(f"loading: {file_}")
+            with open(file_) as f:
+                clinvar_data = sjson.load(f)
+            yield gene, clinvar_data
+        else:
+            continue
+
+def get_risk_alleles():
+    """Converted method (ClinVar_parse.convert_parse_to_csv)
+    loads gene.jsons and searches for risk alleles using three keys in
+    the Clinvar Variation nested dicts in the jsons:
+    'risk', 'risk_allele', 'risk_factor'
+
+    adds dict to risk_variations list if any of those three keys have a value > 0
+    """
+    jsons_path = DATAFILES_PATH/'parse_jsons'
+    # data is name for ClinVar_Datapull import
+    risk_variations = []
+    for gene, clinvar_data in parse.load_gene_json(
+            jsons_path, file_filter='*_parse.json'):
+        print(gene)
+        for dict_ in clinvar_data:
+            risk = 0
+            risk_keys = ['risk', 'risk allele', 'risk factor']
+            if dict_.get('classification_count'):
+                for risk_key in risk_keys:
+                    try:
+                        if dict_.get('classification_count').get(risk_key):
+                            risk += 1
+                    except AttributeError:
+                        print(dict_)
+            if risk > 0:
+                dict_['gene'] = gene
+                risk_variations.append(dict_)
+    return risk_variations
+
+risk_variations = get_risk_alleles()
+df = pd.DataFrame(risk_variations)
+df.drop(['risk submitter'], axis=1, inplace=True)
+submitters = df['submitters']
+
+def get_risk_submitter(col):
+    risk_submitters = []
+    for submitter in col:
+        if 'risk' in (list(submitter.values())[0]):
+            text = "".join("{}: {}".format(k, v) for k,v in submitter.items())
+            risk_submitters.append(text)
+    col_string = ", ".join(risk_submitters)
+    return col_string
+
+df['risk submitter(s)'] = (
+    df['submitters'].apply(lambda x: get_risk_submitter(x))
+)
+
+df.to_csv(DATAFILES_PATH/'clinvar_risk_alleles.csv', encoding = 'utf-8')
+test_file_path = DATAFILES_PATH/'parse_jsons/BRCA1_parse.json'
+
+with open(test_file_path) as f:
+    clinvar_data = sjson.load(f)
+
+risk_variations = []
+for dict_ in clinvar_data:
+    risk = 0
+    risk_keys = ['risk', 'risk allele', 'risk factor']
+    for risk_key in risk_keys:
+        if dict_.get('classification_count').get(risk_key):
+            risk += 1
+    if risk > 0:
+        risk_variations.append(dict_)

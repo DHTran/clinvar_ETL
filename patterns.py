@@ -5,7 +5,7 @@ START_MATCH = re.compile('^.*start="(\d*)')
 STOP_MATCH = re.compile('^.*stop="(\d*)')
 # match digits after Chr="
 CHROM_MATCH = re.compile('^.*Chr="(\d*)')
-# non-greedy match letters between alternateAlleleVCF=" and " 
+# non-greedy match letters between alternateAlleleVCF=" and "
 ALT_SEQ_MATCH = re.compile('^.*alternateAlleleVCF="(\D.*?)"')
 # non-greedy match letters between alternateAlleleVCF=" and "
 REF_SEQ_MATCH = re.compile('^.*referenceAlleleVCF="(\D.*?)"')

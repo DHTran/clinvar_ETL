@@ -1,6 +1,7 @@
 import csv
 import simplejson as sjson
 import os
+import pickle
 from bs4 import BeautifulSoup as bsoup
 from Bio import Entrez
 from pathlib import Path
@@ -8,16 +9,11 @@ from clinvar_ETL_constants import DATABASE, CANCER_GENE_SHEET
 from clinvar_ETL_constants import ACMG59_GENE_SHEET, CARDIO_GENE_SHEET
 from clinvar_ETL_constants import DATAFILES_PATH, MULTIGENES
 from clinvar_ETL_constants import TESTS_PATH, TEST_RECORDS_IDS
+from clinvar_ETL_constants import TEST_RECORDS_PATH
 from dotenv import load_dotenv
 load_dotenv()
 Entrez.api_key = os.getenv('Entrez.api_key')
 Entrez.email = os.getenv('Entrez.email')
-
-"""
-TODO:  figure out how to capture the condition, submitter,
-and classification (in instances of multiple submissions)
-"""
-
 
 class ClinVar_Datapull:
     """Pull ClinVar variation data for set of genes and returns selected
@@ -257,12 +253,13 @@ class ClinVar_Datapull:
     def store_data_as_json(data, path, filename):
         """converts to json to store data locally (with simplejson)
         """
-        print(f"in store_data_as_json, storing {filename}")
+        print(f"storing {filename}")
         try:
             with open(path/filename, 'w') as f:
                 sjson.dump(data, f)
         except TypeError as e:
-            print(f"TypeError saving data of type {type(e)}")
+            print(f"TypeError saving data of type {type(data)}")
+            print(e)
 
 
 class Test_records(ClinVar_Datapull):
@@ -306,3 +303,31 @@ class Test_records(ClinVar_Datapull):
                 ids_records, self.path, 'test_records.json')
         else:
             return ids_records
+
+    def soup_to_textfile(self, soup_records):
+        """function to convert a list of soup objects
+        to pickle files for local storage
+
+        Args:
+            soup_records = list of bsoup parsed xmls
+
+        Return: list of paths to pickle files
+        """
+        file_paths = []
+        for item in soup_records:
+            variation_id = item.find("variationarchive").attrs['variationid']
+            filename = f"{variation_id}_record"
+            file_path = TEST_RECORDS_PATH/filename
+            file_paths.append(file_path)
+            with open(file_path, 'wb') as f:
+                pickle.dump(item, f, protocol=pickle.HIGHEST_PROTOCOL)
+        return file_paths
+
+    def read_textfile_as_soup(self, file_paths):
+        records = []
+        for file_path in file_paths:
+            print(file_path)
+            with open(file_path, 'rb') as f:
+                soup_record = pickle.load(f)
+            records.append(soup_record)
+        return records
