@@ -2,6 +2,7 @@ import csv
 import simplejson as sjson
 import os
 import pickle
+import time
 from bs4 import BeautifulSoup as bsoup
 from Bio import Entrez
 from pathlib import Path
@@ -20,39 +21,27 @@ class ClinVar_Datapull:
     data
 
     Args:
-        gene_panel:  identifies gene panel to send to
-            create_gene_list function to pull genes from csv(s)
-            [e.g. CARDIO_GENE_LIST].  If gene_panel = 'cardio' then
-            pulls genes from 'cardio.csv'.  Possible choices = 'cancer',
-            'cardio', and 'acmg59'.  Default is both cancer and cardio
-            genes csvs if genes argument is none
+    - gene_panel:  identifies gene panel to send to create_gene_list
+        function to pull genes from csv(s) [e.g. CARDIO_GENE_LIST].
+        If gene_panel = 'cardio' then pulls genes from 'cardio.csv'.
+        Possible choices = 'cancer','cardio', and 'acmg59'.  Default is
+        both cancer and cardio genes csvs if genes argument is none
+    - genes:  list of genes if a custom list is desired.  default = None
+    - test_flag (bool): True limits records fetch to first 10, and
+        returns the id, records dict without saving, default is True
+    - return_data (bool): if True returns data instead of saving
+    - path (str) is set to '~/DATAFILES_PATH' by default
+    - overwrite (bool): True allows overwriting of existing jsons,
+        default is False
 
-        genes:  list of genes if a custom list is desired.  default =
-            None
-
-        test_flag (bool): True limits records fetch to first 10, and returns
-            the id, records dict without saving
-
-        path (str) is set to '~/DATAFILES_PATH' by default
-
-        overwrite (bool): True allows overwriting of existing jsons,
-            default is False
-
-        soup: flag to use beautifulsoup4 parser (default=False). if
-        false use readlines() to read xml as list of strings
-
-    method get_records:
+    main caller: get_records()
         pulls variation ids for a given gene using
-            method ids_by_gene:
-                gene[Gene] queries with the optional [single_gene]
-                property on the NCBI database
-
-    method fetch_records pulls Variation page as text using variation ids
-    saves {'gene': [(id, record) tuples]} to json per gene
+        gene[Gene] queries with the optional [single_gene]
+        property on the NCBI database
     """
 
-    def __init__(self, gene_panel=None, genes=None, test_flag=False, path=None,
-                 overwrite=False, soup=False):
+    def __init__(self, gene_panel=None, genes=None, return_data=False, path=None,
+                 overwrite=False, test_flag=True):
         if path:
             self.path = path
         else:
@@ -66,26 +55,21 @@ class ClinVar_Datapull:
                 self.genes = genes
             else:
                 self.genes = [genes]
-        self.test_flag = test_flag
+        self.return_data = return_data
         self.overwrite = overwrite
-        self.soup = soup
+        self.test_flag = test_flag
 
     def __repr__(self):
-        repr_string = (f"""
-            gene panel: {self.gene_panel}
-            genes = {self.genes}
-            test_flag: {self.test_flag}
-            path: {self.path}
-            overwrite: {self.overwrite}
-            soup flag: {self.soup}
-            """)
+        repr_string = (f"gene panel: {self.gene_panel} \
+            \ngenes = {self.genes} \
+            \nreturn_data: {self.return_data} \
+            \npath: {self.path} \
+            \ntest_flag: {self.test_flag} \
+            \noverwrite: {self.overwrite}")
         return repr_string
 
     def get_records(self):
         """
-        Args:
-            None
-
         Iterates over self.gene (list) to query records from ClinVar as
         {'gene': [(id1, record1),(id2, record2)...]}
 
@@ -100,25 +84,25 @@ class ClinVar_Datapull:
             if file_exists and not self.overwrite:
                 print(f"skipping {gene_json}")
                 continue
-            gene_records = {}
             gene_records = self.records_by_gene(gene)
-            if self.test_flag:
+            if self.return_data:
                 return gene_records
             else:
                 print(f"path = {self.path}")
+                # store records for the given gene as json
                 self.store_data_as_json(
                     gene_records, self.path, gene_json)
 
     def records_by_gene(self, gene):
         """
         Args:
-            gene (list): list of genes to iterate over
+            gene: name of gene to query ClinVar with 'gene[Gene]',
+            'single_gene[prop]': filters to single gene results
 
-        queries ClinVar by gene with gene[Gene]
-        option: single_gene[prop] - filters to single gene results
+        Return:
+            gene_records: list of records for given gene
         """
         print(f"in records_by_gene for {gene}")
-        gene_records = {}
         # some genes (e.g. RAD51D are listed as ≥2 genes)
         if gene not in MULTIGENES:
             terms = f'{gene}[Gene], single_gene[prop]'
@@ -127,10 +111,9 @@ class ClinVar_Datapull:
         print(terms)
         ids = self.get_ids(terms)
         if self.test_flag:
-            ids = ids[0:9]
+            ids = ids[0:10]
         # ids records is list of tuples: [(id_, record)...]
-        id_records = self.fetch_clinvar_records(ids)
-        gene_records[gene] = id_records
+        gene_records = self.fetch_clinvar_records(ids)
         return gene_records
 
     def get_ids(self, terms):
@@ -151,31 +134,54 @@ class ClinVar_Datapull:
         """uses Entrez.efetch to pull Variation page
         data from ClinVar (rettype='vcv') as text
 
-        Args:
+        https://biopython.org/docs/1.75/api/Bio.Entrez.html?highlight=efetch#Bio.Entrez.efetch
+        https://www.ncbi.nlm.nih.gov/books/NBK25499/#chapter4.EFetch
 
-        ids = variation ids (numeric) for the variation pages in ClinVar
+        Args:
+            ids = variation ids (numeric) for the variation pages
+                  in ClinVar
+
+        Return:
+            records = list of records pulled with ids read with
+            xml_reader method (default is txt)
         """
-        ids_records = []
+        records = []
         total = len(ids)
         for index, variation_id in enumerate(ids):
             id_record = {}
             print(f"fetching: id = {variation_id}, {index+1} of {total}")
-            handle = Entrez.efetch(
+            handle = self.fetch(
                 db=DATABASE, id=variation_id, is_variationid=True,
                 rettype='vcv', retmode='xml')
-            if self.soup:
-                print("running bsoup")
-                record = bsoup(handle)
-            else:
-                record = handle.readlines()
+            record = self.xml_reader(handle)
+            handle.close()
             if 'copy number' in record:
                 print(f"copy number for {variation_id}")
-                handle.close()
+                # avoids fetching CNV records
                 continue
-            id_record[variation_id] = record
-            ids_records.append(id_record)
-            handle.close()
-        return ids_records
+            records.append(record)
+        return records
+
+    def fetch(self, **kwargs):
+        """method used for fetching ClinVar records
+
+        ddefault = Entrez.efetch
+
+        kwargs = (db=DATABASE, id=variation_id,
+                is_variationid=True,
+                rettype='vcv', retmode='xml')
+        """
+        time.sleep(0.1)
+        return Entrez.efetch(**kwargs)
+
+    def xml_reader(self, handle):
+        """method to pull record from ClinVar with Biopython Entrez.fetch
+
+        Args:
+        - handle = data pulled from ClinVar (default = xml)
+        Returns ClinVar record as txt
+        """
+        return handle.readlines()
 
     def filter_gene_list(self, user_input=False):
         """remove genes from genes list, filenames (gene.json) in the
@@ -264,7 +270,7 @@ class ClinVar_Datapull:
 
 class Test_records(ClinVar_Datapull):
     """
-    ClinVar_datapull subclass to create and store set of Clinvar
+    ClinVar_Datapull subclass to create and store set of Clinvar
     records to test and validate.
 
     Args:
