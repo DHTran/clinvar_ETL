@@ -8,8 +8,118 @@ from datetime import date
 from collections import Counter, defaultdict
 from pathlib import Path
 from clinvar_ETL_constants import DATAPULL_JSONS_PATH, BLOCKLIST_PMIDS
-from clinvar_ETL_constants import PARSE_JSONS_PATH
+from clinvar_ETL_constants import PARSE_JSONS_PATH, PARSE_CSVS_PATH
 from clinvar_datapull import ClinVar_Datapull as clinvar_dp
+
+
+class Parse_to_CSV_Mixin:
+    """Loads parse jsons and converts to csv format
+    """
+    def parse_to_csv(self, today=None):
+        """loads parse jsons and converts to dataframe
+        and saves as csv.
+
+        Args:
+            parse_path: path to folder with parse jsons
+        """
+        if today is None:
+            date_today = date.today()
+            today = date_today.strftime("%m-%d-%Y")
+        for gene, data in self.load_gene_json(
+                self.parse_jsons_path, file_filter='*_parse.json'):
+            dataframe = pd.DataFrame(data)
+            sorted_df = dataframe.sort_values(by=['start'])
+            gene_date = gene+"_"+today
+            filename = f"{gene_date}.csv"
+            file_ = Path(self.csvs_path/filename)
+            if file_.is_file():
+                if self.overwrite:
+                    pass
+                else:
+                    print(f"file {filename} exists in folder")
+                    print(f"overwrite is {self.overwrite}")
+                    print("skipping save")
+                    continue
+            sorted_df.to_csv(self.csvs_path/filename, encoding='utf-8',
+                             index=False)
+            print(f"saving to csv {filename}")
+
+
+class Load_Jsons_Mixin:
+    """Mixin to load json files (ClinVar datapulls and parses)
+    """
+    def load_gene_json(self, path, file_filter=None):
+        """generator function to load files based on file_filter
+        and yields gene, data
+        (assumes json encodes a dict with {gene: clinvar_data}
+
+        Arg:
+            file_filter = str to search for directory with glob
+
+            path = default is DATAPULLS_PATH
+        """
+        for filepath in Path(path).glob(file_filter):
+            print(f"loading {filepath}")
+            if 'parse' in filepath.stem:
+                # extracts gene name from "gene_parse.json"
+                gene = filepath.stem[:-6]
+            else:
+                # extracts gene name from "gene.json"
+                gene = filepath.stem
+            if gene in self.gene_list:
+                # checks for gene.json with gene in panel list
+                if not self.suppress_output:
+                    print(f"loading: {filepath}")
+                with open(filepath) as file_:
+                    if self.decoder == 'sjson':
+                        clinvar_data = self.sjson_decode(
+                            file_,
+                            decode_type=self.decode_type)
+                    else:
+                        clinvar_data = self.json_decode(
+                            file_,
+                            decode_type=self.decode_type)
+                yield gene, clinvar_data
+            else:
+                continue
+
+
+class Decode_Json_Mixin:
+    """Mixin class to decode a json with option to
+    use json or sjson library and choice of deserializer
+    method
+
+    Args:
+        file_ = file object
+        decode_type: 'load' or 'loads' default 'load' (eg. json.load)
+    """
+    def sjson_decode(self, file_, decode_type='load'):
+        """retrieve json-stored data with simplejson
+        """
+        if decode_type == 'load':
+            data = sjson.load(file_)
+        elif decode_type == 'loads':
+            data = sjson.loads(file_)
+        else:
+            print("using default sjson.load")
+            print(f"decode_type = {decode_type}")
+            data = sjson.load(file_)
+        return data
+
+    def json_decode(self, file_, decode_type='load'):
+        """retrieve json-stored data. default json.load.
+        Enter decode_type='loads' for json.loads
+        """
+        print(f"loading {file_}")
+        if decode_type == 'load':
+            data = json.load(file_)
+        elif decode_type == 'loads':
+            data = json.loads(file_)
+        else:
+            print("using default json.load")
+            print(f"decode_type = {decode_type}")
+            data = json.load(file_)
+        return data
 
 
 class ClinVar_Parse_Caller:
@@ -106,9 +216,9 @@ class ClinVar_Parse_Record:
             for assertion in assertions:
                 submitter_data = {}
                 pmids = []
-                scv_number = (
-                    assertion.find("clinvaraccession").
-                    attrs['accession'])
+                # scv_number = (
+                #    assertion.find("clinvaraccession").
+                #    attrs['accession'])
                 submitter_data['datelastupdated'] = (
                     assertion.attrs['datelastupdated'])
                 submitter_data['submittername'] = (
@@ -254,12 +364,12 @@ class ClinVar_Parse_Record:
         summary_dict['classification_count'] = (
             classification_count(data['submission_data']))
         summary_dict['classifications'] = group_classifications(data)
-        summary_dict['comments'] = get_submitter_comments(
-            data['submission_data'])
+        # summary_dict['comments'] = get_submitter_comments(
+        #    data['submission_data'])
         summary_dict['pmids'] = get_pmids(data['submission_data'])
         keys_to_add = [
             'variation_id', 'name', 'date_updated',
-            'num_submitters']
+            'num_submitters', 'start', 'stop', 'ref', 'alt']
         for key in keys_to_add:
             summary_dict[key] = data.get(key)
         return summary_dict
@@ -278,36 +388,8 @@ class ClinVar_Parse_Record:
         return re.sub(PYTHON_CHARS, '', string)
 
 
-class DecodeJsonMixin:
-    """Mixin class to decode a json with option to
-    use json or sjson library and choice of deserializer
-    method
-
-    Args:
-        file_ = file object
-        decode_type: 'load' or 'loads' default 'load' (eg. json.load)
-    """
-    def sjson_decode(self, file_, decode_type='load'):
-        """retrieve json-stored data with simplejson
-        """
-        print(f"loading {file_}")
-        if decode_type == 'load':
-            data = sjson.load(file_)
-        return data
-
-    def json_decode(self, file_, decode_type='load'):
-        """retrieve json-stored data. default json.load.
-        Enter decode_type='loads' for json.loads
-        """
-        print(f"loading {file_}")
-        if decode_type == 'load':
-            data = json.load(file_)
-        elif decode_type == 'loads':
-            data = json.loads(file_)
-        return data
-
-
-class Read_jsons(DecodeJsonMixin):
+class Read_jsons(Decode_Json_Mixin, Load_Jsons_Mixin,
+                 Parse_to_CSV_Mixin):
     """read variation data pulled from ClinVar, stored as json
 
     Args:
@@ -327,13 +409,22 @@ class Read_jsons(DecodeJsonMixin):
             json)
         decode_type: decode method from json package. default is 'load'
     """
-    def __init__(self, path=None, overwrite=False, return_data=False,
+    def __init__(self, parse_jsons_path=None, datapull_jsons_path=None,
+                 csvs_path=None, overwrite=False, return_data=False,
                  genes=None, suppress_output=True, decoder='sjson',
-                 decode_type='loadk'):
-        if path:
-            self.path = path
+                 decode_type='load'):
+        if parse_jsons_path:
+            self.parse_jsons_path = parse_jsons_path
         else:
-            self.path = DATAPULL_JSONS_PATH
+            self.parse_jsons_path = PARSE_JSONS_PATH
+        if datapull_jsons_path:
+            self.datapull_jsons_path = datapull_jsons_path
+        else:
+            self.datapull_jsons_path = DATAPULL_JSONS_PATH
+        if csvs_path:
+            self.csvs_path = csvs_path
+        else:
+            self.csvs_path = PARSE_CSVS_PATH
         self.overwrite = overwrite
         self.return_data = return_data
         if genes is None:
@@ -350,26 +441,28 @@ class Read_jsons(DecodeJsonMixin):
         self.decode_type = decode_type
 
     def __repr__(self):
-        repr_string = (
-            f"path {self.path}\n\
-            return_data is {self.return_data}\n\
-            overwrite is {self.overwrite}\n\
-            gene_list = {self.gene_list}\n\
-            blocklist_pmids = {BLOCKLIST_PMIDS}\n\
-            decoder = {self.decoder}\n\
-            decode_type = {self.decode_type}\n"
-        )
+        repr_string = (f"""
+        datapull_jsons_path = {self.datapull_jsons_path},
+        parse_jsons_path {self.parse_jsons_path},
+        csvs_path {self.csvs_path},
+        return_data is {self.return_data},
+        overwrite is {self.overwrite},
+        gene_list = {self.gene_list},
+        blocklist_pmids = {BLOCKLIST_PMIDS},
+        decoder = {self.decoder},
+        decode_type = {self.decode_type}
+        """)
         return repr_string
 
-    def get_datapulls(self):
+    def parse_datapulls(self):
         """read json files storing variation records by gene from
         DATAPULL_JSONS_PATH (default), hard-coded filter '*.json'
 
         Return:  TODO
         """
         gene_records = {}
-        for gene, records in self.load_gene_json(self.path,
-                                                 file_filter='*.json'):
+        for gene, records in self.load_gene_json(
+                self.datapull_jsons_path, file_filter='*.json'):
             print(f"{gene}")
             print(f"# of records = {len(records)}")
             parsed_records = []
@@ -377,47 +470,21 @@ class Read_jsons(DecodeJsonMixin):
                 record = bsoup(str(record), features='lxml')
                 parsed_data = ClinVar_Parse_Record(record).get_record_data()
                 parsed_records.append(parsed_data)
-            gene_records[gene] = parsed_records
-        if self.return_data:
-            return gene_records
-        else:
-            # TODO
-            pass
-
-    def load_gene_json(self, path, file_filter=None):
-        """generator function to load files based on file_filter
-        and yields gene, data
-        (assumes json encodes a dict with {gene: clinvar_data}
-
-        Arg:
-            file_filter = str to search for directory with glob
-
-            path = path to directory with target files
-        """
-        for filepath in Path(path).glob(file_filter):
-            print(f"loading {filepath}")
-            if 'parse' in filepath.stem:
-                # extracts gene name from "gene_parse.json"
-                gene = filepath.stem[:-6]
-            else:
-                # extracts gene name from "gene.json"
-                gene = filepath.stem
-            if gene in self.gene_list:
-                # checks for gene.json with gene in panel list
-                if not self.suppress_output:
-                    print(f"loading: {filepath}")
-                with open(filepath) as file_:
-                    if self.decoder == 'sjson':
-                        clinvar_data = self.sjson_decode(
-                            file_,
-                            decode_type=self.decode_type)
-                    else:
-                        clinvar_data = self.json_decode(
-                            file_,
-                            decode_type=self.decode_type)
-                yield gene, clinvar_data
-            else:
+            if not self.return_data:
+                filename = f"{gene}_parse.json"
+                # store in PARSE_JSONS_PATH by default
+                file_path = Path(self.parse_jsons_path/filename)
+                if file_path.exists() and self.overwrite:
+                    print("overwriting")
+                elif file_path.exists() and not self.overwrite:
+                    print("file exists")
+                    print(f"overwrite is {self.overwrite} and skipping")
+                    continue
+                print(f"saving to {file_path}")
+                clinvar_dp().json_store(parsed_records, file_path)
                 continue
+            gene_records[gene] = parsed_records
+        return gene_records
 
     @staticmethod
     def read_column(file_path, index=0):

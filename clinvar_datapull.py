@@ -1,4 +1,5 @@
 import csv
+import json
 import simplejson as sjson
 import os
 import pickle
@@ -15,8 +16,41 @@ from dotenv import load_dotenv
 load_dotenv()
 Entrez.api_key = os.getenv('Entrez.api_key')
 Entrez.email = os.getenv('Entrez.email')
+# maxnumber of retries after failed HTTP requests
+Entrez.max_tries = 5
+secrets_path = Path("~/secrets")
 
-class ClinVar_Datapull:
+
+class EncodeJsonMixin:
+    def sjson_store(self, data, path):
+        """store data locally with simplejson, assumes path is pathlib
+        object
+        """
+        print(f"storing {path.name}")
+        try:
+            with open(path, 'w') as file_:
+                sjson.dump(data, file_)
+        except TypeError as e:
+            print(f"TypeError saving data of type {type(data)}")
+            print(e)
+
+    def json_store(self, data, path):
+        """store data locally with json. assumes path is pathlib
+        object
+
+        by default using json using compact separators option
+        (','; ':')
+        """
+        print(f"storing {path.name}")
+        try:
+            with open(path, 'w') as file_:
+                json.dump(data, file_, separators=(',', ':'))
+        except TypeError as e:
+            print(f"TypeError saving data of type {type(data)}")
+            print(e)
+
+
+class ClinVar_Datapull(EncodeJsonMixin):
     """Pull ClinVar variation data for set of genes and returns selected
     data
 
@@ -40,7 +74,8 @@ class ClinVar_Datapull:
         property on the NCBI database
     """
 
-    def __init__(self, gene_panel=None, genes=None, return_data=False, path=None,
+    def __init__(self, gene_panel=None, genes=None,
+                 return_data=False, path=None,
                  overwrite=False, test_flag=True):
         if path:
             self.path = path
@@ -79,19 +114,19 @@ class ClinVar_Datapull:
         saves to self.path as gene.json.
         """
         for gene in self.genes:
-            gene_json = f"{gene}.json"
-            file_exists = self.file_exists(gene_json, self.path)
+            filename = f"{gene}.json"
+            file_exists = self.file_exists(filename, self.path)
             if file_exists and not self.overwrite:
-                print(f"skipping {gene_json}")
+                print(f"skipping {filename}")
                 continue
             gene_records = self.records_by_gene(gene)
             if self.return_data:
                 return gene_records
             else:
                 print(f"path = {self.path}")
+                file_path = Path(self.path/filename)
                 # store records for the given gene as json
-                self.store_data_as_json(
-                    gene_records, self.path, gene_json)
+                self.json_store(gene_records, file_path)
 
     def records_by_gene(self, gene):
         """
@@ -148,7 +183,6 @@ class ClinVar_Datapull:
         records = []
         total = len(ids)
         for index, variation_id in enumerate(ids):
-            id_record = {}
             print(f"fetching: id = {variation_id}, {index+1} of {total}")
             handle = self.fetch(
                 db=DATABASE, id=variation_id, is_variationid=True,
@@ -255,18 +289,6 @@ class ClinVar_Datapull:
                     items.append(item)
         return items
 
-    @staticmethod
-    def store_data_as_json(data, path, filename):
-        """converts to json to store data locally (with simplejson)
-        """
-        print(f"storing {filename}")
-        try:
-            with open(path/filename, 'w') as f:
-                sjson.dump(data, f)
-        except TypeError as e:
-            print(f"TypeError saving data of type {type(data)}")
-            print(e)
-
 
 class Test_records(ClinVar_Datapull):
     """
@@ -305,8 +327,8 @@ class Test_records(ClinVar_Datapull):
         ids_records = None
         ids_records = self.fetch_clinvar_records(self.test_ids)
         if save:
-            self.store_data_as_json(
-                ids_records, self.path, 'test_records.json')
+            file_path = Path(self.path/'test.json')
+            self.json_store(ids_records, file_path)
         else:
             return ids_records
 

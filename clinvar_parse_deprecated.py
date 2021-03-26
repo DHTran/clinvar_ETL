@@ -9,8 +9,8 @@ from datetime import date
 from collections import Counter, namedtuple, defaultdict
 from pathlib import Path
 from clinvar_ETL_constants import DATAFILES_PATH
-from clinvar_ETL_constants import DATAPULL_JSONS_PATH, BLOCKLIST_PATH
-from clinvar_ETL_constants import PARSE_JSONS_PATH
+from clinvar_ETL_constants import DATAPULL_JSONS_PATH
+from clinvar_ETL_constants import PARSE_JSONS_PATH, BLOCKLIST_PMIDS
 from clinvar_datapull import ClinVar_Datapull as clinvar_dp
 
 
@@ -52,7 +52,6 @@ class ClinVar_Parse_deprecated:
             self.path = DATAPULL_JSONS_PATH
         self.overwrite = overwrite
         self.test_flag = test_flag
-        self.blocklist_pmids = self.read_column(BLOCKLIST_PATH)
         if genes is None:
             # ClinVar_Datapull by default creates genes list from
             # cancer and cardio lists
@@ -71,7 +70,6 @@ class ClinVar_Parse_deprecated:
         test_flag is {self.test_flag}
         overwrite is {self.overwrite}
         gene_list = {self.gene_list}
-        blocklist_pmids = {self.blocklist_pmids}
         """)
         return repr_string
 
