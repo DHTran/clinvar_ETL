@@ -22,12 +22,25 @@ class Parse_to_CSV_Mixin:
         Args:
             parse_path: path to folder with parse jsons
         """
+        column_order = [
+            'variation_id',
+            'name',
+            'num_submitters',
+            'classification_count',
+            'classifications',
+            'date_updated',
+            'pmids',
+            'start',
+            'stop',
+            'ref',
+            'alt']
         if today is None:
             date_today = date.today()
             today = date_today.strftime("%m-%d-%Y")
         for gene, data in self.load_gene_json(
                 self.parse_jsons_path, file_filter='*_parse.json'):
             dataframe = pd.DataFrame(data)
+            dataframe = dataframe[column_order]
             sorted_df = dataframe.sort_values(by=['start'])
             gene_date = gene+"_"+today
             filename = f"{gene_date}.csv"
@@ -316,8 +329,12 @@ class ClinVar_Parse_Record:
                     classification = classification + ": "
                     submitters = (
                         ClinVar_Parse_Record.clean_string(submitters))
-                    class_submitters = (
-                        "*  " + classification + submitters + ",  ")
+                    if result_string:
+                        class_submitters = (
+                            "\n*  " + classification + submitters + ", ")
+                    elif not result_string:
+                        class_submitters = (
+                            "*  " + classification + submitters + ", ")
                     result_string = result_string + class_submitters
                 return result_string
 
