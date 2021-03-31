@@ -4,7 +4,9 @@ import time
 import socket
 import sys
 from clinvar_ETL_constants import DATAFILES_PATH, PARSE_CSVS_PATH
+from clinvar_ETL_constants import PARSE_JSONS_PATH
 from googleapiclient.http import MediaFileUpload
+from googleapiclient.errors import HttpError
 from googleapiclient.discovery import build
 from google_auth_oauthlib.flow import InstalledAppFlow
 from google.auth.transport.requests import Request
@@ -13,33 +15,15 @@ sys.path.insert(1, '/Users/dht/secrets')
 from drive_secrets import SCOPES, CLINVAR_DATAPULLS_FOLDER
 
 DRIVE_SECRETS_PATH = Path('/Users/dht/secrets')
-# os path to ClinVar Datapulls folder
+# os path to ClinVar Datapulls folder on MyDrive
 CLINVAR_FOLDER = Path('/Volumes/GoogleDrive/My Drive/ClinVar datapulls')
 
 # updating paths to datafiles (i.e. parse.csvs), Clinvar datapulls folder
-class Drive_Api:
-    """use Google api to create and update Google sheets using
-    ClinVar data.  Takes list of genes, creates filenames with
-    gene and current date (day-month-year)
+
+class ServiceMixin:
+    """mixin class to create Google API service
     """
-
-    def __init__(self, path=None, overwrite=False):
-        if path:
-            self.path = path
-        else:
-            self.path = PARSE_CSVS_PATH
-        self.overwrite = overwrite
-
-    def __repr__(self):
-        repr_string = (f"""
-        path = {self.path}
-        overwrite = {self.overwrite}
-        SCOPES = {SCOPES}
-        folder = {CLINVAR_DATAPULLS_FOLDER}
-        """)
-        return repr_string
-
-    def get_service(self, api, version):
+    def get_service(self, api='sheets', version='v4'):
         """gets tokens using credentials.json if tokens don't already
         exist.  Creates service with build, default api = 'sheets',
         version = 'v4'.
@@ -69,7 +53,33 @@ class Drive_Api:
         service = build(api, version, credentials=creds)
         return service
 
-    def create_sheets_from_csvs(self):
+class Create_Sheets(ServiceMixin):
+    """use Google api to create and update Google sheets using
+    ClinVar data.  Takes list of genes, creates filenames with
+    gene and current date (day-month-year)
+
+    Args:
+        path = path to folder containg csvs
+        overwrite (bool) = if True will overwrite sheet files
+        folder_id = Google Drive folder to place sheet files
+    """
+
+    def __init__(self, path=None, overwrite=False):
+        if path:
+            self.path = path
+        else:
+            self.path = PARSE_CSVS_PATH
+        self.overwrite = overwrite
+
+    def __repr__(self):
+        repr_string = (f"""
+        path = {self.path}
+        overwrite = {self.overwrite}
+        SCOPES = {SCOPES}
+        """)
+        return repr_string
+
+    def sheets_from_csvs(self):
         """creates sheets from csv files
         """
         # prevent timeout error
@@ -78,6 +88,8 @@ class Drive_Api:
         csv_paths = self.load_filenames(self.path, '*.csv')
 
         def filter_existing(csv_paths):
+            """removes existing sheets from list of paths
+            """
             existing_sheets = self.load_filenames(
                 CLINVAR_FOLDER, '*.gsheet', return_paths=False)
             # filter out existing sheets
@@ -126,3 +138,166 @@ class Drive_Api:
                 results = filename
             file_paths.append(results)
         return file_paths
+
+class Update_Sheets(ServiceMixin):
+    """class to update Google sheets with custom column widths
+
+    Args:
+        api = API service to use, default api is 'sheet'
+        version = Verson of the API, for 'sheet' it's 'v4
+        date_text = text string to filter on for modification. e.g.
+            sheets are named gene_03-27-21, so filter on '03-27-21
+        folder_id = id of Google folder containing sheets
+    """
+
+    def __init__(self, date_text, folder_id=None,
+                 api='sheet', version='v4'):
+        self.api = api
+        self.version = version
+        self.date_text = date_text
+        if folder_id:
+            self.folder_id = folder_id
+        else:
+            self.folder_id = CLINVAR_DATAPULLS_FOLDER
+
+    def __repr__(self):
+        repr_string = (f"Update Sheets\
+        \n api = {self.api} \
+        \n version = {self.version} \
+        \n date_text = {self.date_text}")
+        return repr_string
+
+    def update_sheets(self, redo=False):
+        drive_service = self.get_service(api='drive', version='v3')
+        file_ids = self.get_file_ids(drive_service, self.date_text,
+                                     self.folder_id)
+        sheet_service = self.get_service(api='sheets', version='v4')
+        file_sheet_ids = self.get_sheet_ids(sheet_service, file_ids)
+        remainder = self.custom_column_widths(sheet_service,
+                                              file_sheet_ids)
+        # tries 1 more time with items in remainder
+        if redo:
+            time.sleep(20)
+            try:
+                remainder = self.custom_column_widths(
+                    sheet_service, remainder)
+            except HttpError as e:
+                print(f"An error occurred: {e}")
+        return remainder
+
+    def get_file_ids(self, drive_service, date_text, folder_id):
+        """pulls spreadsheetIds of spreadsheets in folder (using folderID)
+        returns list of file ids
+
+        checks if spreadsheet names contains 'date_text'
+
+        e.g. clinVar data named 'ATM_03-26-2021'
+        """
+
+        def sort_tuples(tuple_list):
+            tuple_list.sort(key = lambda x: x[0])
+            return tuple_list
+
+        spreadsheet_ids = []
+        page_token = None
+        while True:
+            try:
+                response = drive_service.files().list(
+                    q=(f"mimeType='application/vnd.google-apps.spreadsheet' \
+                    and parents in '{folder_id}'"),
+                    spaces='drive',
+                    fields='nextPageToken, files(id, name, modifiedTime)',
+                    pageToken=page_token).execute()
+                counter = 0
+                for file in response.get('files', []):
+                    counter += 1
+                    name = file.get('name')
+                    id_ = file.get('id')
+                    modified_date = file.get('modifiedTime')
+                    if date_text in file.get('name'):
+                        spreadsheet_ids.append((name, id_, modified_date))
+                page_token = response.get('nextPageToken', None)
+                if page_token is None:
+                    print(f"file count = {counter}")
+                    break
+            except HttpError as e:
+                print(f"An error occurred: {e}")
+                break
+        spreadsheet_ids = sort_tuples(spreadsheet_ids)
+        return spreadsheet_ids
+
+    def get_sheet_ids(self, sheet_service, file_ids):
+        """uses spreadsheetIds to pull sheet_ids (first sheet)
+        from Google sheets
+
+        Args: file_ids = list of tuples
+            ('name', 'spreadsheet_ids', 'modifiedTime')
+
+        Returns: list of tuples ('name', 'spreadsheetId', 'sheet_id')
+        """
+        file_sheet_ids = []
+        for item in file_ids:
+            sheet_data = (
+                sheet_service.spreadsheets().
+                get(spreadsheetId=item[1]).execute()
+                )
+            # to prevent going over quota
+            time.sleep(5)
+            sheets = sheet_data.get('sheets', '')
+            title = sheets[0].get("properties", {}).get("title", "Sheet1")
+            sheet_id = sheets[0].get("properties", {}).get("sheetId", 0)
+            new_tuple = (item[0], item[1], item[2], sheet_id)
+            print(new_tuple)
+            file_sheet_ids.append(new_tuple)
+        return file_sheet_ids
+
+    # TODO add code to filter out files that have been modified recently
+    def custom_column_widths(self, sheet_service, file_sheet_ids):
+        """method to update specific columns to custom pixel widths
+
+        Arg: ids_list = list of tuples
+            ('name', 'spreadsheetId', 'modifiedTime', 'sheet_id')
+
+        Return: remainder (list of tuples that had HttpError, i.e.
+        failed to update)
+        """
+        remainder = []
+        for name, spreadsheet_id, modified_time, sheet_id in file_sheet_ids:
+            update_requests = {"requests": [
+                {"updateDimensionProperties": {
+                    "range": {"sheetId": sheet_id,
+                            "dimension": "COLUMNS",
+                            "startIndex": 1,
+                            "endIndex": 2},
+                    "properties": {"pixelSize": 250},
+                    "fields": "pixelSize"},},
+                {"updateDimensionProperties": {
+                    "range": {"sheetId": sheet_id,
+                            "dimension": "COLUMNS",
+                            "startIndex": 2,
+                            "endIndex": 3},
+                    "properties": {"pixelSize": 100},
+                    "fields": "pixelSize"}},
+                {"updateDimensionProperties": {
+                    "range": {"sheetId": sheet_id,
+                            "dimension": "COLUMNS",
+                            "startIndex": 3,
+                            "endIndex": 5},
+                    "properties": {"pixelSize": 400},
+                    "fields": "pixelSize"}},
+                ]
+            }
+            try:
+                request = (
+                    sheet_service.spreadsheets().
+                    batchUpdate(spreadsheetId=spreadsheet_id,
+                                body=update_requests)
+                    )
+                time.sleep(5)
+                response = request.execute()
+            except HttpError as e:
+                print(f"error: {e}")
+                print(f"error on {name}")
+                errored = (name, spreadsheet_id, modified_time, sheet_id)
+                remainder.append(errored)
+        return remainder
