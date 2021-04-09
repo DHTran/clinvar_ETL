@@ -151,18 +151,31 @@ class ClinVar_Datapull(EncodeJsonMixin):
         gene_records = self.fetch_clinvar_records(ids)
         return gene_records
 
-    def get_ids(self, terms):
+    def get_ids(self, terms, retmax=100000, retstart=1):
         """gets database ids using search terms
+
+        Note retmax = 100000 (max records returned)
+        current ClinVar limit is 100,000
         """
         print("in get_ids")
-        esearch = Entrez.read(Entrez.esearch(
-            db=DATABASE,
-            term=terms,
-            retmax=100000,)
-            )
-        ids = esearch['IdList']
-        count = esearch['Count']
-        print(f"count {count}")
+        ids = []
+        total_count = int(0)
+        while len(ids) <= total_count:
+            print(f"retstart: {retstart}")
+            esearch = Entrez.read(Entrez.esearch(
+                db=DATABASE,
+                term=terms,
+                retmax=retmax,
+                retstart=retstart)
+                )
+            # esearch['Count'] is always total number
+            total_count = int(esearch['Count'])
+            query_ids = esearch['IdList']
+            ids.extend(query_ids)
+            retstart += retmax
+            if len(ids)+1 == total_count:
+                return ids
+                break
         return ids
 
     def fetch_clinvar_records(self, ids):
