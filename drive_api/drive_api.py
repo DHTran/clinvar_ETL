@@ -3,8 +3,7 @@ import pickle
 import time
 import socket
 import sys
-from clinvar_ETL_constants import DATAFILES_PATH, PARSE_CSVS_PATH
-from clinvar_ETL_constants import PARSE_JSONS_PATH
+from utilities import PARSE_CSVS_PATH
 from googleapiclient.http import MediaFileUpload
 from googleapiclient.errors import HttpError
 from googleapiclient.discovery import build
@@ -21,7 +20,7 @@ CLINVAR_FOLDER = Path('/Volumes/GoogleDrive/My Drive/ClinVar datapulls')
 # updating paths to datafiles (i.e. parse.csvs), Clinvar datapulls folder
 
 class ServiceMixin:
-    """mixin class to create Google API service
+    """Create Google API service.
     """
     def get_service(self, api='sheets', version='v4'):
         """gets tokens using credentials.json if tokens don't already
@@ -93,10 +92,8 @@ class Create_Sheets(ServiceMixin):
             existing_sheets = self.load_filenames(
                 CLINVAR_FOLDER, '*.gsheet', return_paths=False)
             # filter out existing sheets
-            return [
-                item for item in csv_paths
-                if item[0] not in existing_sheets
-                ]
+            return [item for item in csv_paths
+                    if item[0] not in existing_sheets]
 
         if not self.overwrite:
             csv_paths = filter_existing(csv_paths)
@@ -105,10 +102,10 @@ class Create_Sheets(ServiceMixin):
             time.sleep(0.1)
 
     def create_sheet(self, service, filename, csv_path):
-        """creates sheets from csv files using Drive API
+        """Create Google sheets from csv files using Drive API.
+
         Takes source_name = filename of csv (gene_month-day-year.csv)
         Creates sheet with name gene_month-day-year
-
         """
         sheet_name = filename
         sheet_mimetype = 'application/vnd.google-apps.spreadsheet'
@@ -140,13 +137,13 @@ class Create_Sheets(ServiceMixin):
         return file_paths
 
 class Update_Sheets(ServiceMixin):
-    """class to update Google sheets with custom column widths
+    """Update Google sheets with custom column widths.
 
     Args:
         api = API service to use, default api is 'sheet'
         version = Verson of the API, for 'sheet' it's 'v4
         date_text = text string to filter on for modification. e.g.
-            sheets are named gene_03-27-21, so filter on '03-27-21
+            sheets are named gene_03-27-21, so filter on '03-27-21'
         folder_id = id of Google folder containing sheets
     """
 
@@ -186,8 +183,8 @@ class Update_Sheets(ServiceMixin):
         return remainder
 
     def get_file_ids(self, drive_service, date_text, folder_id):
-        """pulls spreadsheetIds of spreadsheets in folder (using folderID)
-        returns list of file ids
+        """Pull spreadsheetIds of spreadsheets in folder (using folderID)
+        returns list of file ids.
 
         checks if spreadsheet names contains 'date_text'
 
@@ -227,8 +224,7 @@ class Update_Sheets(ServiceMixin):
         return spreadsheet_ids
 
     def get_sheet_ids(self, sheet_service, file_ids):
-        """uses spreadsheetIds to pull sheet_ids (first sheet)
-        from Google sheets
+        """Use spreadsheetIds to pull sheet_ids (first sheet) from Google sheets.
 
         Args: file_ids = list of tuples
             ('name', 'spreadsheet_ids', 'modifiedTime')
@@ -253,7 +249,7 @@ class Update_Sheets(ServiceMixin):
 
     # TODO add code to filter out files that have been modified recently
     def custom_column_widths(self, sheet_service, file_sheet_ids):
-        """method to update specific columns to custom pixel widths
+        """Update specific columns to custom pixel widths.
 
         Arg: ids_list = list of tuples
             ('name', 'spreadsheetId', 'modifiedTime', 'sheet_id')
