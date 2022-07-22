@@ -36,9 +36,9 @@ records associated. Alternatvely pull records by variation id(s).
 ```
 
 **Requires a datafiles folder to store jsons/csvs**  
-~/datafiles/clinvar_ETL_datafiles/datapull_jsons/
-~/datafiles/clinvar_ETL_datafiles/parse_jsons/
-~/datafiles/clinvar_ETL_datafiles/parse_csvs/
+~/datafiles/clinvar_ETL_datafiles/datapull_jsons/  
+~/datafiles/clinvar_ETL_datafiles/parse_jsons/  
+~/datafiles/clinvar_ETL_datafiles/parse_csvs/  
 
 
 **Requires a .env file to  contains the following:**  
