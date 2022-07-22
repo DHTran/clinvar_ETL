@@ -8,9 +8,9 @@ from bs4 import BeautifulSoup as bsoup
 from datetime import date
 from collections import Counter, defaultdict
 from pathlib import Path
-from utilities import DATAPULL_JSONS_PATH, BLOCKLIST_PMIDS
-from utilities import PARSE_JSONS_PATH, PARSE_CSVS_PATH, REPUTABLE_SUBMITTERS
-from datapull import ClinVar_Datapull as clinvar_dp
+from clinvar_utilities import DATAPULL_JSONS_PATH, BLOCKLIST_PMIDS
+from clinvar_utilities import PARSE_JSONS_PATH, PARSE_CSVS_PATH, REPUTABLE_SUBMITTERS
+from clinvar_datapull import ClinVar_Datapull as clinvar_dp
 
 
 def clean_string(string):
@@ -484,6 +484,7 @@ class Read_Jsons(Load_Jsons_Mixin, XMLs_to_Soup_Mixin):
     def __repr__(self):
         """Print class attributes and blocklist_pmids."""
         repr_string = (f"""
+        Read_Jsons class
         datapull_jsons_path = {self.datapull_jsons_path},
         parse_jsons_path {self.parse_jsons_path},
         csvs_path {self.csvs_path},

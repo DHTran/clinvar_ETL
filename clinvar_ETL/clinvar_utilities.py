@@ -26,8 +26,7 @@ REPUTABLE_SUBMITTERS = [
     'Athena', 'Baylor Genetics', 'Fulgent genetics',
     'Emory genetics laboratory', 'ClinGen Glaucoma Variant Curation Expert Panel, ClinGen'
     ]
-
-
+    
 def read_column(file_path, index=0):
     """simple function to read a line in file as list
     default row 0 (index argument)

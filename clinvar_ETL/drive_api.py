@@ -1,16 +1,25 @@
+"""Create Google sheet from csv file.
+
+TODO: update redirects, does not work currently
+"""
 import os.path
 import pickle
 import time
 import socket
 import sys
-from utilities import PARSE_CSVS_PATH
+from clinvar_utilities import PARSE_CSVS_PATH
 from googleapiclient.http import MediaFileUpload
 from googleapiclient.errors import HttpError
 from googleapiclient.discovery import build
 from google_auth_oauthlib.flow import InstalledAppFlow
 from google.auth.transport.requests import Request
 from pathlib import Path
-sys.path.insert(1, '/Users/dht/secrets')
+from dotenv import load_dotenv
+
+load_dotenv()
+secrets_path = os.getenv(secrets_path)
+sys.path.insert(1, secrets_path)
+
 from drive_secrets import SCOPES, CLINVAR_DATAPULLS_FOLDER
 
 DRIVE_SECRETS_PATH = Path('/Users/dht/secrets')

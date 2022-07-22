@@ -1,9 +1,6 @@
 """Pull data from ClinVar (variation records) and stores as jsons.
 """
 
-import sys
-# to import clinvar_utilities
-sys.path.insert(0, '/Users/dht/Repos/clinvar_projects')
 import csv
 import json
 # required to avoid "Couldn't find tree builder with the features..." error 
@@ -15,9 +12,9 @@ import time
 from bs4 import BeautifulSoup as bsoup
 from Bio import Entrez
 from pathlib import Path
-from utilities import DATABASE, GLAUCOMA_GENES
-from utilities import DATAFILES_PATH, DATAPULL_JSONS_PATH
-from utilities import TEST_RECORDS_IDS, TEST_RECORDS_PATH
+from clinvar_utilities import DATABASE, GLAUCOMA_GENES
+from clinvar_utilities import ETL_DATAFILES, DATAPULL_JSONS_PATH
+from clinvar_utilities import TEST_RECORDS_IDS, TEST_RECORDS_PATH
 from dotenv import load_dotenv
 # from typing import Union
 from urllib.error import HTTPError
@@ -352,10 +349,10 @@ class ClinVar_Datapull(EncodeJsonMixin, Fetch_Mixin):
         """Create list of genes from csv files.
 
         Arg:
-            gene_panel -- 'glaucoma', 
-            if no gene_panel is set then defaults 'glaucoma'
+            gene_panel: if no gene_panel is set then gene_file = GLAUCOMA_GENES
+            GLAUCOMA_GENES points to 'glaucoma_genes.csv' containing genes list
 
-            (At the moment, 9/2022, glaucoma is the only panel)
+            # As of 9/2022, glaucoma is the only panel
         """
         genes = []
         if gene_panel == 'glaucoma':
@@ -364,7 +361,7 @@ class ClinVar_Datapull(EncodeJsonMixin, Fetch_Mixin):
             gene_file = None # for future panels
         else:
             gene_file = GLAUCOMA_GENES
-        with open(DATAFILES_PATH/gene_file) as f:
+        with open(ETL_DATAFILES/gene_file) as f:
             reader = csv.reader(f)
             for row in reader:
                 gene = row[0].strip()
