@@ -1,0 +1,8 @@
+name: clinvar_ETL_package
+
+channels:
+  - default
+  - conda-forge
+
+dependencies:
+  - python=3.9.6

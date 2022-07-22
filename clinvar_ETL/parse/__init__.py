@@ -1,1 +1,0 @@
-from .clinvar_parse import ClinVar_Parse_Record, Read_Jsons
