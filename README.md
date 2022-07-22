@@ -34,7 +34,7 @@ records associated. Alternatvely pull records by variation id(s).
 ```
 
 ### Usage
-main.py provides a CLI for the package
+```main.py provides a CLI for the package
 -- main.py -o --gene 'MUTYH' --datapull:  queries ClinVar for MUTYH 
   variation records and save as MUTYH.json, -o: overwrite existing json file
 -- main.py --datapull: query using default gene list (provided in 
@@ -49,3 +49,4 @@ main.py provides a CLI for the package
 -- main.py --update_sheets: update Google sheets formating to make it more
   readable
 -- main.py --datapull --check:  Check arguments, don't run. 
+```
