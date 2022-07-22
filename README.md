@@ -30,7 +30,8 @@ records associated. Alternatvely pull records by variation id(s).
 └── utilities
 │     └── cclinvar_utilities.py
 │     └── cglaucoma_genes.csv
-│     └── regex_patterns.py```
+│     └── regex_patterns.py
+```
 
 ### Usage
 main.py provides a CLI for the package
