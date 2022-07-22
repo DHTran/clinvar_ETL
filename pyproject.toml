@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "clinvar_etl"
+name = "clinvar_ETL"
 version = "0.1.0"
 description = "Pull and parse ClinVar Variation records"
 authors = ["David Tran <davhutra@gmail.com>"]
