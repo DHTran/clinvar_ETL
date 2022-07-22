@@ -35,13 +35,13 @@ records associated. Alternatvely pull records by variation id(s).
 └── pyproject.toml
 ```
 
-**Requires a datafiles folder to store jsons/csvs**
+**Requires a datafiles folder to store jsons/csvs**  
 ~/datafiles/clinvar_ETL_datafiles/datapull_jsons/
 ~/datafiles/clinvar_ETL_datafiles/parse_jsons/
 ~/datafiles/clinvar_ETL_datafiles/parse_csvs/
 
 
-**Requires a .env file to  contains the following:**
+**Requires a .env file to  contains the following:**  
 - Entrez.api_key = 'API_KEY' # to access 
 - Entrez.email = 'your_email'
   - See https://www.ncbi.nlm.nih.gov/books/NBK25497/ for creation of an API key to facilitate access to NCBI databases
