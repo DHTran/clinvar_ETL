@@ -4,7 +4,7 @@ from pathlib import Path
 # constants
 DATABASE = 'clinvar'
 GLAUCOMA_GENES = 'glaucoma_genes.csv'
-BLOCKLIST_PATH = Path('blocklist_pmids.csv')
+BLOCKLIST_PATH = Path('clinvar_ETL/blocklist_pmids.csv')
 TEST_GENE = []
 MULTIGENES = ['RAD51D']
 HOME_PATH = Path.home()
@@ -24,9 +24,11 @@ REPUTABLE_SUBMITTERS = [
     'Partners', 'Counsyl', 'Insight', 'ARUP',
     'Eurofins', 'Prevention Genetics', 'Quest',
     'Athena', 'Baylor Genetics', 'Fulgent genetics',
-    'Emory genetics laboratory', 'ClinGen Glaucoma Variant Curation Expert Panel, ClinGen'
+    'Emory genetics laboratory',
+    'ClinGen Glaucoma Variant Curation Expert Panel, ClinGen'
     ]
-    
+
+
 def read_column(file_path, index=0):
     """simple function to read a line in file as list
     default row 0 (index argument)
@@ -36,5 +38,6 @@ def read_column(file_path, index=0):
         reader = csv.reader(f)
         data = [row[index] for row in reader]
     return data
+
 
 BLOCKLIST_PMIDS = read_column(BLOCKLIST_PATH)

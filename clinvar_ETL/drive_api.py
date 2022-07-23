@@ -17,16 +17,13 @@ from pathlib import Path
 from dotenv import load_dotenv
 
 load_dotenv()
-secrets_path = os.getenv(secrets_path)
+secrets_path = os.getenv('secrets_path')
 sys.path.insert(1, secrets_path)
+DRIVE_SECRETS_PATH = Path(secrets_path)
+CLINVAR_FOLDER = Path('/Volumes/GoogleDrive/My Drive/ClinVar datapulls')
 
 from drive_secrets import SCOPES, CLINVAR_DATAPULLS_FOLDER
 
-DRIVE_SECRETS_PATH = Path('/Users/dht/secrets')
-# os path to ClinVar Datapulls folder on MyDrive
-CLINVAR_FOLDER = Path('/Volumes/GoogleDrive/My Drive/ClinVar datapulls')
-
-# updating paths to datafiles (i.e. parse.csvs), Clinvar datapulls folder
 
 class ServiceMixin:
     """Create Google API service.
@@ -41,12 +38,12 @@ class ServiceMixin:
         # tokens, and is created automatically when the authorization
         # flow completes for the first time.
         if os.path.exists(DRIVE_SECRETS_PATH/'token.pickle'):
-            print(f"token.pickle exists")
+            print("token.pickle exists")
             with open(DRIVE_SECRETS_PATH/'token.pickle', 'rb') as token:
                 creds = pickle.load(token)
         # If there are no (valid) credentials, let the user log in.
         if not creds or not creds.valid:
-            print(f"no creds or not valid")
+            print("no creds or not valid")
             if creds and creds.expired and creds.refresh_token:
                 print("refresh token")
                 creds.refresh(Request())
@@ -60,6 +57,7 @@ class ServiceMixin:
                 pickle.dump(creds, token)
         service = build(api, version, credentials=creds)
         return service
+
 
 class Create_Sheets(ServiceMixin):
     """use Google api to create and update Google sheets using
@@ -144,6 +142,7 @@ class Create_Sheets(ServiceMixin):
                 results = filename
             file_paths.append(results)
         return file_paths
+
 
 class Update_Sheets(ServiceMixin):
     """Update Google sheets with custom column widths.
@@ -249,7 +248,7 @@ class Update_Sheets(ServiceMixin):
             # to prevent going over quota
             time.sleep(5)
             sheets = sheet_data.get('sheets', '')
-            title = sheets[0].get("properties", {}).get("title", "Sheet1")
+            # title = sheets[0].get("properties", {}).get("title", "Sheet1")
             sheet_id = sheets[0].get("properties", {}).get("sheetId", 0)
             new_tuple = (item[0], item[1], item[2], sheet_id)
             print(new_tuple)
@@ -268,29 +267,30 @@ class Update_Sheets(ServiceMixin):
         """
         remainder = []
         for name, spreadsheet_id, modified_time, sheet_id in file_sheet_ids:
-            update_requests = {"requests": [
-                {"updateDimensionProperties": {
-                    "range": {"sheetId": sheet_id,
-                            "dimension": "COLUMNS",
-                            "startIndex": 1,
-                            "endIndex": 2},
-                    "properties": {"pixelSize": 250},
-                    "fields": "pixelSize"},},
-                {"updateDimensionProperties": {
-                    "range": {"sheetId": sheet_id,
-                            "dimension": "COLUMNS",
-                            "startIndex": 2,
-                            "endIndex": 3},
-                    "properties": {"pixelSize": 100},
-                    "fields": "pixelSize"}},
-                {"updateDimensionProperties": {
-                    "range": {"sheetId": sheet_id,
-                            "dimension": "COLUMNS",
-                            "startIndex": 3,
-                            "endIndex": 5},
-                    "properties": {"pixelSize": 400},
-                    "fields": "pixelSize"}},
-                ]
+            update_requests = {
+                "requests": [
+                    {"updateDimensionProperties": {
+                        "range": {"sheetId": sheet_id,
+                                  "dimension": "COLUMNS",
+                                  "startIndex": 1,
+                                  "endIndex": 2},
+                        "properties": {"pixelSize": 250},
+                        "fields": "pixelSize"}, },
+                    {"updateDimensionProperties": {
+                        "range": {"sheetId": sheet_id,
+                                  "dimension": "COLUMNS",
+                                  "startIndex": 2,
+                                  "endIndex": 3},
+                        "properties": {"pixelSize": 100},
+                        "fields": "pixelSize"}},
+                    {"updateDimensionProperties": {
+                        "range": {"sheetId": sheet_id,
+                                  "dimension": "COLUMNS",
+                                  "startIndex": 3,
+                                  "endIndex": 5},
+                        "properties": {"pixelSize": 400},
+                        "fields": "pixelSize"}},
+                    ]
             }
             try:
                 request = (

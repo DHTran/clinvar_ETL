@@ -9,12 +9,14 @@ from datetime import date
 from collections import Counter, defaultdict
 from pathlib import Path
 from clinvar_utilities import DATAPULL_JSONS_PATH, BLOCKLIST_PMIDS
-from clinvar_utilities import PARSE_JSONS_PATH, PARSE_CSVS_PATH, REPUTABLE_SUBMITTERS
+from clinvar_utilities import PARSE_JSONS_PATH, PARSE_CSVS_PATH
+from clinvar_utilities import REPUTABLE_SUBMITTERS
 from clinvar_datapull import ClinVar_Datapull as clinvar_dp
 
 
 def clean_string(string):
     """Remove python/coding-specific characters for better presentation."""
+    # not flake8
     PYTHON_CHARS = re.compile("[\{\}\'\[\]]")
 
     if isinstance(string, str):
@@ -23,9 +25,10 @@ def clean_string(string):
         string = str(string)
     return re.sub(PYTHON_CHARS, '', string)
 
+
 class XMLs_to_Soup_Mixin:
     """Mixin to convert ClinVar xmls to bsoup objects."""
-    
+
     def xmls_to_bsoup(self, records):
         """Convert XMLs to list of bsoup objects."""
         souped_records = []
@@ -37,18 +40,18 @@ class XMLs_to_Soup_Mixin:
 
 class Load_Jsons_Mixin:
     """Mixin to load json files (ClinVar datapulls and parses)."""
-    
+
     def decode(self, file):
         """Retrieve json-stored data with simplejson."""
         try:
             data = sjson.load(file)
         except TypeError as e:
             print(e)
-            print(f"Trying json instead")
+            print("Trying json instead")
             data = json.load(file)
-        except ValueError as e: 
+        except ValueError as e:
             print(e)
-            print(f"Trying json instead")
+            print("Trying json instead")
             data = json.load(file)
         return data
 
@@ -56,14 +59,14 @@ class Load_Jsons_Mixin:
         """Retrieve json-stored data with simplejson."""
         try:
             data = json.loads(file)
-        except TypeError as e:
-            print(f"Trying sjson instead")
+        except TypeError:
+            print("Trying sjson instead")
             data = sjson.loads(file)
         return data
 
     def load_gene_json(self, path, genes=None, file_filter=None):
         """Read json and yield gene, data.
-        
+
         Generator, asssumes json encodes a dict with {gene: clinvar_data}.
 
         Arg:
@@ -90,11 +93,12 @@ class Load_Jsons_Mixin:
                     if file:
                         try:
                             clinvar_data = self.decode(file)
-                        except AttributeError as e:
+                        except AttributeError:
                             clinvar_data = self.decodes(file)
                 yield gene, clinvar_data
             else:
                 continue
+
 
 class ClinVar_Parse_Record:
     """Parse a single ClinVar Variation record and return selected
@@ -104,13 +108,12 @@ class ClinVar_Parse_Record:
         record:  a ClinVar Variation record (as Beautiful Soup4 object)
     """
     CLASSIFICATION_NAMES = ['pathogenic', 'benign']
-    TRUSTED_NAMES = ["trusted_"+ name for name in CLASSIFICATION_NAMES]
+    TRUSTED_NAMES = ["trusted_" + name for name in CLASSIFICATION_NAMES]
     ALL_NAMES = list(zip(CLASSIFICATION_NAMES, TRUSTED_NAMES))
 
     def __init__(self, record):
         """Take single record as class attribute."""
         self.record = record
-
 
     def __repr__(self):
         """Return record header."""
@@ -118,17 +121,16 @@ class ClinVar_Parse_Record:
         repr_string = f"record: {str(record_header)}"
         return repr_string
 
-
     def get_record_data(self, gene):
         """Parse specific data for a given ClinVar Variation Record.
 
-        variant-level data: ['variationid', 'start', 'stop', 
+        variant-level data: ['variationid', 'start', 'stop',
             'referenceallelevcf', 'numberofsubmissions', 'datelastupdated',
-            'alternateallelevcf', 'chr', 'assembly','chrom'] 
+            'alternateallelevcf', 'chr', 'assembly','chrom']
 
         submission data (per submission)
-        - submitter_name, classification, inheritance, condition, pmid(s), 
-        (submitter comment is not parsed currently, method 
+        - submitter_name, classification, inheritance, condition, pmid(s),
+        (submitter comment is not parsed currently, method
          get_submitter_comments)
         """
         variant_data = self.get_variant_data(gene)
@@ -136,7 +138,6 @@ class ClinVar_Parse_Record:
             self.get_assertion_data())
         variation_summary_data = self.get_variation_summary_data(variant_data)
         return variation_summary_data
-
 
     def get_variant_data(self, gene):
         """Pull variant level data from xml.
@@ -149,7 +150,7 @@ class ClinVar_Parse_Record:
         Args:
             gene: gene name (passed from datapull.json)
 
-        Returns dict of {variation data keys: values}, e.g. 
+        Returns dict of {variation data keys: values}, e.g.
         'variation_id': id, 'gene': gene ...
         """
         results_dict = {}
@@ -195,10 +196,9 @@ class ClinVar_Parse_Record:
         results_dict['chrom'] = f"chr{results_dict['chrom']}"
         return results_dict
 
-
     def get_assertion_data(self):
         """Parse 'clinicalassertion' XML node to get submission data.
-        
+
         Returns:
             assertion_results: [submitter: assertion data]
         """
@@ -212,7 +212,6 @@ class ClinVar_Parse_Record:
             {len(clinical_assertions)}"""
         return assertion_results, num_submitters
 
-
     def get_submitter_data(self, assertions):
         """Iterate over assertions to pull out submitter data."""
         # conditions = []
@@ -221,15 +220,16 @@ class ClinVar_Parse_Record:
             """Nested function to set 1 or 0 for given classification_name.
             """
             trusted_string = str("trusted_"+classification_name)
-            # a few submitters have submitted classifications as "non-pathogenic"
+            # a few submitters have submitted classifications as
+            # "non-pathogenic"
             if "non-pathogenic" in submitter_classification:
                 submitter_data[classification_name] = 0
             elif classification_name in submitter_classification:
                 submitter_data[classification_name] = 1
-            else: 
-                submitter_data[classification_name] = 0 
-            if ((classification_name in submitter_classification) and 
-                (any(item in submitter_name for item in select_submitters))):
+            else:
+                submitter_data[classification_name] = 0
+            if ((classification_name in submitter_classification) and
+                    (any(item in submitter_name for item in select_submitters))):
                 submitter_data[trusted_string] = 1
             else:
                 submitter_data[trusted_string] = 0
@@ -277,11 +277,10 @@ class ClinVar_Parse_Record:
                         f"disease is not a dict or str: {disease}")
             yield submitter_data
 
-
     def get_variation_summary_data(self, data):
         """Summarize the parsed clinvar data in a user friendly format.
 
-        Args: 
+        Args:
             data: variant_data dict (from get_assertion_data() method)
 
         TODO: 'condition' data is often given as reference to a disease
@@ -309,7 +308,7 @@ class ClinVar_Parse_Record:
         #    data['submission_data'])
         summary_dict['pmids'], summary_dict['blocked_pmids'] = (
             self.get_pmids(data['submission_data']))
-        # summary_dict['condition'] = data['condition'] 
+        # summary_dict['condition'] = data['condition']
         keys_to_add = [
             'variation_id', 'name', 'date_updated',
             'num_submitters', 'start', 'stop', 'ref', 'alt',
@@ -318,12 +317,11 @@ class ClinVar_Parse_Record:
             summary_dict[key] = data.get(key)
         return summary_dict
 
-
     def classification_count(self, classification_data):
-        """Get summary and number of classifications per ClinVar variation 
+        """Get summary and number of classifications per ClinVar variation
         record.
-        
-        Arg: 
+
+        Arg:
             classification_data: list of dicts
 
         Returns:
@@ -333,25 +331,24 @@ class ClinVar_Parse_Record:
               defined in ALL_NAMES list of tuples
         """
         classification_counts = {}
-        total_classifications = Counter(submitter['classification'] for submitter
-            in classification_data)
+        total_classifications = Counter(
+            submitter['classification'] for submitter in classification_data)
         for classification_name, trusted_name in self.ALL_NAMES:
             classification_counts[classification_name] = Counter(
                 submitter[classification_name] for submitter
-                in classification_data)  
+                in classification_data)
             classification_counts[trusted_name] = Counter(
                 submitter[trusted_name] for submitter
-                in classification_data)   
+                in classification_data)
         # remove python chars
         cleaned_total_string = clean_string(dict(total_classifications))
         summary_string = f"ClinVar summary - {cleaned_total_string}"
         return (summary_string, classification_counts)
 
-
     def group_submitters_by_classification(self, data):
         """Reorganize classification submission data.
-        
-        From {'submittername': 'classification'} to 
+
+        From {'submittername': 'classification'} to
              {'classification': ['submitter1', 'submitter2'...]}
 
         Arg: data = variant_data dict containing 'submission' data
@@ -362,7 +359,6 @@ class ClinVar_Parse_Record:
             classification = submission.get('classification')
             classification_submitters[classification].append(submitter)
         return self.clean_classifications(classification_submitters)
-
 
     def get_pmids(self, submission_data):
         """Get pmids from submissions.
@@ -375,7 +371,7 @@ class ClinVar_Parse_Record:
             for pmid in submission_list:
                 pmid = pmid + ", "
                 pmid_string += pmid
-            pmid_string = pmid_string[:-2]   
+            pmid_string = pmid_string[:-2]
             return pmid_string
 
         pmids_list = []
@@ -420,7 +416,6 @@ class ClinVar_Parse_Record:
             result_string = result_string + class_submitters
         return result_string
 
-
     def get_submitter_comments(self, submission_data):
         """Get comment data from submissions.
 
@@ -441,8 +436,8 @@ class Read_Jsons(Load_Jsons_Mixin, XMLs_to_Soup_Mixin):
     """Read variation data pulled from ClinVar (from xml using beautiful
     soup xml parser), store as json.
 
-    Methods: 
-        parse_datapulls: reads ClinVar xml from datapull jsons and 
+    Methods:
+        parse_datapulls: reads ClinVar xml from datapull jsons and
         stores files as jsons with filename pattern of gene_parse.json
 
     Args:
@@ -452,7 +447,7 @@ class Read_Jsons(Load_Jsons_Mixin, XMLs_to_Soup_Mixin):
         return_data(bool): if True returns record(s) and count instead
             of saving to json. Default = False
         overwrite(bool): if True saves over existing file,
-            Default = False    
+            Default = False
     """
 
     def __init__(self, test_flag=False, overwrite=False, return_data=False,
@@ -480,7 +475,6 @@ class Read_Jsons(Load_Jsons_Mixin, XMLs_to_Soup_Mixin):
                 genes = [genes]
             self.genes = genes
 
-
     def __repr__(self):
         """Print class attributes and blocklist_pmids."""
         repr_string = (f"""
@@ -496,9 +490,8 @@ class Read_Jsons(Load_Jsons_Mixin, XMLs_to_Soup_Mixin):
         """)
         return repr_string
 
-
     def parse_datapull_jsons(self):
-        """Read json files storing variation records by gene from 
+        """Read json files storing variation records by gene from
         DATAPULL_JSONS_PATH (default), hard-coded filter '*.json'.
 
         Return: Dict of records, with genes as the key
@@ -518,7 +511,7 @@ class Read_Jsons(Load_Jsons_Mixin, XMLs_to_Soup_Mixin):
                 parsed_data = ClinVar_Parse_Record(record).get_record_data(gene)
                 parsed_records.append(parsed_data)
             if not self.return_data:
-                if self.test_flag: 
+                if self.test_flag:
                     filename = f"{gene}_parse_test.json"
                 else:
                     filename = f"{gene}_parse.json"
@@ -534,7 +527,6 @@ class Read_Jsons(Load_Jsons_Mixin, XMLs_to_Soup_Mixin):
                 continue
             gene_records[gene] = parsed_records
         return gene_records
-
 
     def parse_to_csv(self, today=None):
         """Load parse jsons and converts to dataframe and saves as csv.
@@ -564,12 +556,11 @@ class Read_Jsons(Load_Jsons_Mixin, XMLs_to_Soup_Mixin):
             'trusted_benign_count',
             ]
 
-
         if today is None:
             date_today = date.today()
             today = date_today.strftime("%m-%d-%Y")
         for gene, data in self.load_gene_json(
-                self.parse_jsons_path, genes=self.genes, 
+                self.parse_jsons_path, genes=self.genes,
                 file_filter='*_parse.json'):
             gene_date = gene + "_" + today
             filename = f"{gene_date}.csv"
@@ -589,13 +580,12 @@ class Read_Jsons(Load_Jsons_Mixin, XMLs_to_Soup_Mixin):
                              index=False)
             print(f"saving to csv {filename}")
 
-
     @staticmethod
     def read_column(file_path, index=0):
-        """Use csv.reader on a file to be returned as a list, starting 
+        """Use csv.reader on a file to be returned as a list, starting
         each row at a given position (default = 0).
 
-        Args: 
+        Args:
             file_path: path to file
             index: position to start converting the reader output to list
         """
@@ -604,5 +594,4 @@ class Read_Jsons(Load_Jsons_Mixin, XMLs_to_Soup_Mixin):
             reader = csv.reader(f)
             data = [row[index] for row in reader]
         return data
-
 

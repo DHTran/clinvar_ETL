@@ -17,22 +17,24 @@ if __name__ == "__main__":
         "update_sheets from main.py"
         )
     parser.add_argument(
-        '-o', '--overwrite', help="if supplied overwrite saved files", action="store_true")
+        '-o', '--overwrite', help="if supplied overwrite saved files",
+        action="store_true")
     parser.add_argument(
-        '-g', '--genes', type=lambda x: [gene.strip().upper() for gene in 
-                                         x.split(',')], 
+        '-g', '--genes', type=lambda x: [gene.strip().upper() for gene in
+                                         x.split(',')],
         default=None, help='Gene(s) to query provided, \
         e.g. "APC, MLH1, RET", default=None. If None supplied will use query \
         genes on glaucoma panel. Note query is case-insensitive')
     parser.add_argument(
         '-p', '--panel', type=str, default=None, help="Which gene panel to \
-        choose: 'glaucoma'", 
+        choose: 'glaucoma'",
         choices=['glaucoma'])
     parser.add_argument(
         '-s', '--save_path', type=str, default=None, help="Path to save file \
             folder")
     parser.add_argument(
-        '-t', '--test_flag', action="store_true", help="Limit query to 10 files")
+        '-t', '--test_flag', action="store_true",
+        help="Limit query to 10 files")
     parser.add_argument(
         '--datapull', action="store_true", help="Run datapull")
     parser.add_argument(
@@ -42,14 +44,15 @@ if __name__ == "__main__":
     parser.add_argument(
         '--to_csv', action="store_true", help="Convert parse.jsons to CSVs")
     parser.add_argument(
-        '--create_sheets', action="store_true", help="Convert CSV to Google sheet")
+        '--create_sheets', action="store_true",
+        help="Convert CSV to Google sheet")
     parser.add_argument(
         '--update_sheets', action="store_true", help="Update Sheet formatting")
     parser.add_argument(
         '--date', type=str, default=None, help="Date to filter, MM-DD-YYYY")
     parser.add_argument(
         '--check', action="store_true", help="Check arguments, don't run")
-    args=parser.parse_args()
+    args = parser.parse_args()
     if args.check:
         print(args)
     elif args.datapull:
@@ -59,18 +62,18 @@ if __name__ == "__main__":
         print(data)
         data.get_records()
     elif args.validate:
-        validate = Validate_Datapull(genes=args.genes, 
-                                 gene_panel=args.panel, save_json=True)
+        validate = Validate_Datapull(genes=args.genes,
+                                     gene_panel=args.panel, save_json=True)
         print(validate)
         validate.check_and_update()
     elif args.parse:
-        read_datapulls = Read_Jsons(return_data=False, test_flag = args.test_flag, 
-                                overwrite=args.overwrite, genes=args.genes)
+        read_datapulls = Read_Jsons(return_data=False, test_flag=args.test_flag,
+                                    overwrite=args.overwrite, genes=args.genes)
         print(read_datapulls)
         read_datapulls.parse_datapull_jsons()
     elif args.to_csv:
         read_datapulls = Read_Jsons(return_data=False, overwrite=args.overwrite,
-                                genes=args.genes)
+                                    genes=args.genes)
         print(read_datapulls)
         read_datapulls.parse_to_csv()
     elif args.create_sheets:

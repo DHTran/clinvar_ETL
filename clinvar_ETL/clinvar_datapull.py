@@ -3,7 +3,7 @@
 
 import csv
 import json
-# required to avoid "Couldn't find tree builder with the features..." error 
+# required to avoid "Couldn't find tree builder with the features..." error
 # import lxml
 import simplejson as sjson
 import os
@@ -12,9 +12,9 @@ import time
 from bs4 import BeautifulSoup as bsoup
 from Bio import Entrez
 from pathlib import Path
-from clinvar_utilities import DATABASE, GLAUCOMA_GENES
-from clinvar_utilities import ETL_DATAFILES, DATAPULL_JSONS_PATH
-from clinvar_utilities import TEST_RECORDS_IDS, TEST_RECORDS_PATH
+from .clinvar_utilities import DATABASE, GLAUCOMA_GENES
+from .clinvar_utilities import ETL_DATAFILES, DATAPULL_JSONS_PATH
+from .clinvar_utilities import TEST_RECORDS_IDS, TEST_RECORDS_PATH
 from dotenv import load_dotenv
 # from typing import Union
 from urllib.error import HTTPError
@@ -38,11 +38,11 @@ class Decode_Jsons_Mixin:
             data = sjson.load(file)
         except TypeError as e:
             print(e)
-            print(f"Trying json instead")
+            print("Trying json instead")
             data = json.load(file)
-        except ValueError as e: 
+        except ValueError as e:
             print(e)
-            print(f"Trying json instead")
+            print("Trying json instead")
             data = json.load(file)
         return data
 
@@ -50,8 +50,8 @@ class Decode_Jsons_Mixin:
         """Retrieve json-stored data with simplejson."""
         try:
             data = json.loads(file)
-        except TypeError as e:
-            print(f"Trying sjson instead")
+        except TypeError:
+            print("Trying sjson instead")
             data = sjson.loads(file)
         return data
 
@@ -78,7 +78,7 @@ class Decode_Jsons_Mixin:
                     if file:
                         try:
                             clinvar_data = self.decode(file)
-                        except AttributeError as e:
+                        except AttributeError:
                             clinvar_data = self.decodes(file)
                 yield gene, clinvar_data
             else:
@@ -89,32 +89,33 @@ class EncodeJsonMixin:
     """Mixin to provide json/sjson dump methods."""
 
     def store(self, data, file):
-        """Store data locally with sjson then json if TypeError occurs 
+        """Store data locally with sjson then json if TypeError occurs
         (ClinVar xml can fail).
 
-        Args: 
-            data -- data to encode 
+        Args:
+            data -- data to encode
             path -- path to store file (checks if Pathlib Path)
         """
         try:
             sjson.dump(data, file)
-        except TypeError as e:
+        except TypeError:
             json.dump(data, file)
-            
+
+
 class Fetch_Mixin:
     """Mixin to query ClinVar by variation ids and return xml records using the
     BioPython Entrex.fetch method to query the an NCBI database.
     """
 
     def fetch_clinvar_records(self, ids: list[int]):
-        """Use Entrez.efetch to pull Variation page data from ClinVar 
+        """Use Entrez.efetch to pull Variation page data from ClinVar
         (rettype='vcv') as text.
 
         https://biopython.org/docs/1.75/api/Bio.Entrez.html?highlight=efetch#Bio.Entrez.efetch
         https://www.ncbi.nlm.nih.gov/books/NBK25499/#chapter4.EFetch
 
         Args:
-            ids = list of variation ids [should be list of integer(s) 
+            ids = list of variation ids [should be list of integer(s)
             but may be string(s)] for the variation pages in ClinVar
 
         Return:
@@ -137,7 +138,7 @@ class Fetch_Mixin:
         elif isinstance(ids, set) or isinstance(ids, tuple):
             ids = list(ids)
         else:
-        # if ids is a single integer, 
+            # if ids is a single integer,
             ids = [ids]
         total = len(ids)
         for index, variation_id in enumerate(ids):
@@ -153,12 +154,12 @@ class Fetch_Mixin:
     def fetch(self, **kwargs):
         """Pull ClinVar records using Biopython's efetch.
 
-        kwargs -- (db=DATABASE, id=variation_id, is_variationid=True, 
+        kwargs -- (db=DATABASE, id=variation_id, is_variationid=True,
                    rettype='vcv', retmode='xml')
         """
         retries = 1
         while retries < 6:
-            try: 
+            try:
                 handle = Entrez.efetch(**kwargs)
                 record = handle.readlines()
                 handle.close()
@@ -171,6 +172,7 @@ class Fetch_Mixin:
         variation_id = kwargs['id']
         return ('fetch error', variation_id)
 
+
 class ClinVar_Datapull(EncodeJsonMixin, Fetch_Mixin):
     """Pull ClinVar variation data for set of genes and returns selected
     data.
@@ -179,7 +181,7 @@ class ClinVar_Datapull(EncodeJsonMixin, Fetch_Mixin):
       gene_panel -- identifies gene panel to send to create_gene_list
         function to pull genes from csv(s) [e.g. CARDIO_GENE_LIST].
         If gene_panel = 'cardio' then pulls genes from 'cardio.csv'.
-        Possible choices = 'cancer','cardio', 'acmg59', 'new_panel'.  
+        Possible choices = 'cancer','cardio', 'acmg59', 'new_panel'.
         Default is both cancer and cardio genes csvs if genes argument is none
       genes --  list of genes if a custom list is desired.  default = None
       test_flag (bool) -- if True limits records fetch to first 10, and
@@ -255,12 +257,12 @@ class ClinVar_Datapull(EncodeJsonMixin, Fetch_Mixin):
                     # store records for the given gene as json
                     with open(file_path, 'w') as file:
                         self.store(gene_records, file)
-    
+
     def get_records_per_gene(self, gene):
         """Assemble search terms for passing to fetch_clinvar_records
-        method.  
-        
-        Returns list of records for a given gene.  
+        method.
+
+        Returns list of records for a given gene.
 
         Args:
             gene -- name of gene to query ClinVar with 'gene[Gene]',
@@ -273,46 +275,47 @@ class ClinVar_Datapull(EncodeJsonMixin, Fetch_Mixin):
         terms = self.get_query_terms(gene)
         print(terms)
         gene_ids = self.get_ids_per_gene(terms)
-        if gene_ids: 
+        if gene_ids:
             if self.test_flag:
                 gene_ids = gene_ids[0:10]
             gene_records = self.fetch_clinvar_records(gene_ids)
             return gene_records
         elif gene_ids is None:
             return None
-    
+
     @staticmethod
     def get_query_terms(gene):
         "Pull ClinVar ids for a given gene."
 
-        # filters out CNVs 
+        # filters out CNVs
         not_filters = [' NOT "copy number gain"', ' NOT "copy number loss"']
         terms = f'{gene}[Gene]'
         for not_tag in not_filters:
             terms += f'{not_tag}[Type of variation]'
         return terms
-    
+
     @staticmethod
     def get_ids_per_gene(terms, retmax=100000, retstart=1):
         """Retrieve NCBI database (db=DATABASE) ids using search terms.
 
         Note retmax = 100000 (max records returned)
-        current ClinVar limit is 100,000 per query but ClinVar records 
+        current ClinVar limit is 100,000 per query but ClinVar records
         are >100,000. retstart default 1.
         """
         ids = []
         total_count = int(0)
-        # may need to loop several times since query is capped at retmax 
+        # may need to loop several times since query is capped at retmax
         while len(ids) <= total_count:
             # print(f"retstart: {retstart}")
-            esearch = Entrez.read(Entrez.esearch(db=DATABASE, term=terms,
-                retmax=retmax, retstart=retstart))
+            esearch = Entrez.read(
+                Entrez.esearch(db=DATABASE, term=terms,
+                               retmax=retmax, retstart=retstart))
             # esearch['Count'] is always total number
             total_count = int(esearch.get('Count'))
-            if total_count == 0: 
+            if total_count == 0:
                 # Query results return no results e.g. all CNVs for a gene
                 print(f"{terms} returned {total_count} ids")
-                return None 
+                return None
             query_ids = esearch['IdList']
             ids.extend(query_ids)
             retstart += retmax
@@ -358,7 +361,8 @@ class ClinVar_Datapull(EncodeJsonMixin, Fetch_Mixin):
         if gene_panel == 'glaucoma':
             gene_file = GLAUCOMA_GENES
         elif gene_panel == 'TBD':
-            gene_file = None # for future panels
+            # for future panels
+            gene_file = None
         else:
             gene_file = GLAUCOMA_GENES
         with open(ETL_DATAFILES/gene_file) as f:
@@ -369,7 +373,7 @@ class ClinVar_Datapull(EncodeJsonMixin, Fetch_Mixin):
         return genes
 
     def fetch_test_records(self, save=False):
-        """Fetch as set of test records using preset variationids 
+        """Fetch as set of test records using preset variationids
         (TEST_RECORDS_IDS from clinvar_utilities) or a specified set of ids.
         """
         test_ids = TEST_RECORDS_IDS
@@ -404,7 +408,7 @@ class ClinVar_Datapull(EncodeJsonMixin, Fetch_Mixin):
                     item = row[0].strip()
                     items.append(item)
         return items
-    
+
     @staticmethod
     def soup_to_textfile(self, soup_records):
         """Convert a list of soup objects to pickle files for local storage.
@@ -434,7 +438,8 @@ class ClinVar_Datapull(EncodeJsonMixin, Fetch_Mixin):
                 soup_record = pickle.load(f)
             records.append(soup_record)
         return records
-    
+
+
 class Validate_Datapull(Fetch_Mixin, EncodeJsonMixin, Decode_Jsons_Mixin):
     """Compares Variation ids in saved jsons versus ids from [Gene] queries
     of the ClinVar database.
@@ -443,8 +448,8 @@ class Validate_Datapull(Fetch_Mixin, EncodeJsonMixin, Decode_Jsons_Mixin):
         gene_panel --  identifies gene panel to send to create_gene_list
             function to pull genes from csv(s)
         genes --  list of genes if a custom list is desired.  default = None
-            path: path to folder holding jsons default = DATAPULL_JSONS_PATH 
-        save_json (bool) -- bool, if True save missing records to json, 
+            path: path to folder holding jsons default = DATAPULL_JSONS_PATH
+        save_json (bool) -- bool, if True save missing records to json,
             default = False
         path (Path object) -- path to folder holding datapull jsons (default)
     """
@@ -461,7 +466,7 @@ class Validate_Datapull(Fetch_Mixin, EncodeJsonMixin, Decode_Jsons_Mixin):
         if path is None:
             self.path = DATAPULL_JSONS_PATH
         self.save_json = save_json
-    
+
     def __repr__(self):
         repr_string = (f"""
         genes = {self.genes},
@@ -470,18 +475,18 @@ class Validate_Datapull(Fetch_Mixin, EncodeJsonMixin, Decode_Jsons_Mixin):
         save_json = {self.save_json}
         """)
         return repr_string
-    
+
     def check_and_update(self):
         """Main caller for Validate_Datapull class.
 
-        Get ClinVar Variation ids missing from datapull and updates the gene 
+        Get ClinVar Variation ids missing from datapull and updates the gene
         jsons with missing records
 
         Note datapull_only_ids (2nd item returned) are not used in this method
         """
         missing_query_ids, _ = self.compare_ids()
         if missing_query_ids is None:
-            print(f"No missing ids")
+            print("No missing ids")
             return
         missing_query_ids = [int(id) for id in missing_query_ids]
         print(f"missing_query_ids: {len(missing_query_ids)}")
@@ -499,10 +504,10 @@ class Validate_Datapull(Fetch_Mixin, EncodeJsonMixin, Decode_Jsons_Mixin):
             with open(missing_ids_name, 'w') as file:
                 sjson.dump(missing_query_ids, file)
         self.add_missing_records(missing_records)
-        
+
     def load_datapull_json(self):
-        """Retrieve ClinVar records stored as jsons. 
-        
+        """Retrieve ClinVar records stored as jsons.
+
         ClinVar records are in the format: {'gene': [list of records]}
         (note: parsed from xml using Biopython)
         """
@@ -521,7 +526,7 @@ class Validate_Datapull(Fetch_Mixin, EncodeJsonMixin, Decode_Jsons_Mixin):
         """Read datapull jsons to retrive the ClinVar ids that were successfully
         pulled.
 
-        Args: 
+        Args:
             path --  path to folder holding the datapull jsons
         """
         datapull_ids = {}
@@ -536,16 +541,16 @@ class Validate_Datapull(Fetch_Mixin, EncodeJsonMixin, Decode_Jsons_Mixin):
         return datapull_ids
 
     def pull_clinvar_query_ids(self):
-        """Query ClinVar for all variation ids associated with genes in 
-        self.genes. 
-        
+        """Query ClinVar for all variation ids associated with genes in
+        self.genes.
+
         Returns dict where: {'gene1': [id1, id2...], 'gene2': [id1, id2, ...]}
         """
         all_ids = {}
         for gene in self.genes:
             terms = ClinVar_Datapull.get_query_terms(gene)
             variation_ids = ClinVar_Datapull.get_ids_per_gene(terms)
-            if variation_ids: 
+            if variation_ids:
                 all_ids[gene] = variation_ids
             elif variation_ids is None:
                 pass
@@ -553,16 +558,16 @@ class Validate_Datapull(Fetch_Mixin, EncodeJsonMixin, Decode_Jsons_Mixin):
 
     def compare_ids(self):
         """Validate datapull by matching pulled ids versus initial id query.
-        
-        Looks for ClinVar variation ids that were no successully datapulled 
-        (missing_query_ids) and ids that are present in datapull jsons but not 
+
+        Looks for ClinVar variation ids that were no successully datapulled
+        (missing_query_ids) and ids that are present in datapull jsons but not
         in the list of ids associated with the genes query (datapull_only_ids).
 
         missing_query_ids are likely from Http errors or recently added
         ClinVar pages
 
         datapull_only_ids are likely ClinVar pages that were recently deleted
-        
+
         Returns Sets of variation ids
         """
         def values_as_set(items):
@@ -570,12 +575,12 @@ class Validate_Datapull(Fetch_Mixin, EncodeJsonMixin, Decode_Jsons_Mixin):
             print(items.keys())
             for value in items.values():
                 values_as_set.update(value)
-            return values_as_set  
+            return values_as_set
 
         # ids returned as dicts of {'gene': [id1, id2...]}
         query_ids = self.pull_clinvar_query_ids()
         assert query_ids is not None, "query ids returned None"
-        datapull_ids =  self.ids_from_datapull_jsons()
+        datapull_ids = self.ids_from_datapull_jsons()
         assert datapull_ids is not None, "datapull ids returned None"
         print(f"datapull query id count {len(datapull_ids)}")
         print(f"query ids count {len(query_ids)}")
@@ -588,9 +593,8 @@ class Validate_Datapull(Fetch_Mixin, EncodeJsonMixin, Decode_Jsons_Mixin):
         elif len(query_ids_set) < len(datapull_ids_set):
             print("less query ids than datapull ids")
         missing_query_ids = query_ids_set.difference(datapull_ids_set)
-        datapull_only_ids = datapull_ids_set.difference(query_ids_set)  
+        datapull_only_ids = datapull_ids_set.difference(query_ids_set)
         return missing_query_ids, datapull_only_ids
-
 
     def add_missing_records(self, records):
         """Identify missing records (difference of original gene query ids
@@ -608,7 +612,7 @@ class Validate_Datapull(Fetch_Mixin, EncodeJsonMixin, Decode_Jsons_Mixin):
             nonlocal records
             if all(isinstance(x, list) for x in records):
                 pass
-            else: 
+            else:
                 records = [records]
             for record in records:
                 soup_record = bsoup(str(record), features='lxml')
@@ -618,7 +622,7 @@ class Validate_Datapull(Fetch_Mixin, EncodeJsonMixin, Decode_Jsons_Mixin):
                 else:
                     missing_data_by_genes[gene].extend([record])
             return missing_data_by_genes
-    
+
         user_check = input("This will overwrite and update the gene.json files. \
                             Do you wish to continue? y/n")
         if user_check.lower() == 'y':
@@ -626,7 +630,7 @@ class Validate_Datapull(Fetch_Mixin, EncodeJsonMixin, Decode_Jsons_Mixin):
         else:
             return
         missing_data_by_genes = get_genes_from_records()
-        if self.save_json: 
+        if self.save_json:
             save_path = Path(DATAPULL_JSONS_PATH/'missing_data_by_genes.json')
             with open(save_path, 'w') as file:
                 sjson.dump(missing_data_by_genes, file)
@@ -641,5 +645,3 @@ class Validate_Datapull(Fetch_Mixin, EncodeJsonMixin, Decode_Jsons_Mixin):
                 with open(filepath, 'w') as file:
                     print(f"updating {filepath}")
                     sjson.dump(clinvar_data, file)
-
-        
