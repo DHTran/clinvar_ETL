@@ -3,22 +3,15 @@ from pathlib import Path
 
 # constants
 DATABASE = 'clinvar'
-GLAUCOMA_GENES = 'glaucoma_genes.csv'
-BLOCKLIST_PATH = Path('clinvar_ETL/blocklist_pmids.csv')
-TEST_GENE = []
-MULTIGENES = ['RAD51D']
-HOME_PATH = Path.home()
-ETL_DATAFILES = Path(HOME_PATH/'datafiles/clinvar_ETL_datafiles')
-CLINVAR_DOWNLOADS = ETL_DATAFILES/'ClinVar_downloads'
-DATAPULL_JSONS_PATH = ETL_DATAFILES/'datapull_jsons'
-GENOME_FILES_PATH = Path(HOME_PATH/'datafiles/genome_datafiles')
-PARSE_JSONS_PATH = ETL_DATAFILES/'parse_jsons'
-PARSE_CSVS_PATH = ETL_DATAFILES/'parse_csvs'
-TEST_RECORDS_PATH = ETL_DATAFILES/'test_records'
-TESTS_PATH = ETL_DATAFILES/'tests'
-TEST_JSONS_PATH = ETL_DATAFILES/'test_jsons'
-TEST_RECORDS_IDS = []
-TEST_RECORDS_PATHS_LIST = [f"{id_}_record" for id_ in TEST_RECORDS_IDS]
+# assumes /clinvar_ETL/clinvar_ETL/clinvar_utilities.py location
+PARENT_FOLDER = Path().resolve().parents[0]
+PACKAGE_DATAFILES = Path(PARENT_FOLDER/'datafiles')
+DATAPULL_JSONS_PATH = PACKAGE_DATAFILES/'datapull_jsons'
+PARSE_JSONS_PATH = PACKAGE_DATAFILES/'parse_jsons'
+PARSE_CSVS_PATH = PACKAGE_DATAFILES/'parse_csvs'
+TEST_RECORDS_PATH = PACKAGE_DATAFILES/'test_records'
+BLOCKLIST_PATH = PACKAGE_DATAFILES/'blocklist_pmids.csv'
+GLAUCOMA_GENES = PACKAGE_DATAFILES/'glaucoma_genes.csv'
 REPUTABLE_SUBMITTERS = [
     'Invitae', 'GeneDx', 'Color', 'Ambry',
     'Partners', 'Counsyl', 'Insight', 'ARUP',
@@ -38,6 +31,5 @@ def read_column(file_path, index=0):
         reader = csv.reader(f)
         data = [row[index] for row in reader]
     return data
-
 
 BLOCKLIST_PMIDS = read_column(BLOCKLIST_PATH)

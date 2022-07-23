@@ -42,10 +42,11 @@ records associated. Alternatvely pull records by variation id(s).
 
 
 **Requires a .env file to  contains the following:**  
-- Entrez.api_key = 'API_KEY' # to access 
+- Entrez.api_key = 'API_KEY' 
 - Entrez.email = 'your_email'
   - See https://www.ncbi.nlm.nih.gov/books/NBK25497/ for creation of an API key to facilitate access to NCBI databases
 - A path to a secrets folder that loads Google Drive API credentials
+  - 7/22/22: drive_api.py needs updating to work with recent Drive API updates
 
 ### Usage
 

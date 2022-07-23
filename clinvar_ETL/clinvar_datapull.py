@@ -12,9 +12,9 @@ import time
 from bs4 import BeautifulSoup as bsoup
 from Bio import Entrez
 from pathlib import Path
-from .clinvar_utilities import DATABASE, GLAUCOMA_GENES
-from .clinvar_utilities import ETL_DATAFILES, DATAPULL_JSONS_PATH
-from .clinvar_utilities import TEST_RECORDS_IDS, TEST_RECORDS_PATH
+from clinvar_utilities import DATABASE, GLAUCOMA_GENES
+from clinvar_utilities import PACKAGE_DATAFILES, DATAPULL_JSONS_PATH
+from clinvar_utilities import TEST_RECORDS_PATH
 from dotenv import load_dotenv
 # from typing import Union
 from urllib.error import HTTPError
@@ -187,7 +187,7 @@ class ClinVar_Datapull(EncodeJsonMixin, Fetch_Mixin):
       test_flag (bool) -- if True limits records fetch to first 10, and
         returns the id, records dict without saving, default is False
       return_data (bool) -- if True returns data instead of saving
-      path (str) -- path to datafiles, is set to '~/DATAFILES_PATH' by default
+      path (str) -- path to datafiles, is set to 'PACKAGE_DATAFILES' by default
       overwrite (bool) -- True allows overwriting of existing jsons,
         default is False
 
@@ -365,7 +365,7 @@ class ClinVar_Datapull(EncodeJsonMixin, Fetch_Mixin):
             gene_file = None
         else:
             gene_file = GLAUCOMA_GENES
-        with open(ETL_DATAFILES/gene_file) as f:
+        with open(PACKAGE_DATAFILES/gene_file) as f:
             reader = csv.reader(f)
             for row in reader:
                 gene = row[0].strip()
