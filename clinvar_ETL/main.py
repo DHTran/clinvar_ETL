@@ -2,9 +2,9 @@ import argparse
 from Bio import Entrez
 # from dotenv import load_dotenv
 from pathlib import Path
-from clinvar_datapull import ClinVar_Datapull, Validate_Datapull
-from clinvar_parse import Read_Jsons
-from drive_api import Create_Sheets, Update_Sheets
+from clinvar_ETL.clinvar_datapull import ClinVar_Datapull, Validate_Datapull
+from clinvar_ETL.clinvar_parse import Read_Jsons
+from clinvar_ETL.drive_api import Create_Sheets, Update_Sheets
 # max number of retries after failed HTTP failures
 Entrez.max_tries = 5
 eutils_url = 'https://eutils.ncbi.nlm.nih.gov/entrez/eutils/'

@@ -12,9 +12,9 @@ import time
 from bs4 import BeautifulSoup as bsoup
 from Bio import Entrez
 from pathlib import Path
-from clinvar_utilities import DATABASE, GLAUCOMA_GENES
-from clinvar_utilities import PACKAGE_DATAFILES, DATAPULL_JSONS_PATH
-from clinvar_utilities import TEST_RECORDS_PATH
+from clinvar_ETL.clinvar_utilities import DATABASE, GLAUCOMA_GENES
+from clinvar_ETL.clinvar_utilities import PACKAGE_DATAFILES, DATAPULL_JSONS_PATH
+from clinvar_ETL.clinvar_utilities import TEST_RECORDS_PATH
 from dotenv import load_dotenv
 # from typing import Union
 from urllib.error import HTTPError
@@ -242,7 +242,6 @@ class ClinVar_Datapull(EncodeJsonMixin, Fetch_Mixin):
                 filename = f"test_{gene}.json"
             else:
                 filename = f"{gene}.json"
-            # files_exists staticmethod return True if file
             file_exists = self.check_file_exists(filename, self.path)
             if file_exists and not self.overwrite and not self.return_data:
                 print(f"skipping {filename}")
@@ -252,10 +251,10 @@ class ClinVar_Datapull(EncodeJsonMixin, Fetch_Mixin):
                 if self.return_data:
                     return gene_records
                 else:
-                    print(f"path = {self.path}")
                     file_path = Path(self.path/filename)
                     # store records for the given gene as json
                     with open(file_path, 'w') as file:
+                        print(f"storing {file_path}")
                         self.store(gene_records, file)
 
     def get_records_per_gene(self, gene):
