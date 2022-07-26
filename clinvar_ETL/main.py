@@ -10,7 +10,7 @@ Entrez.max_tries = 5
 eutils_url = 'https://eutils.ncbi.nlm.nih.gov/entrez/eutils/'
 secrets_path = Path("~/secrets")
 
-if __name__ == "__main__":
+def main():
     args = None
     parser = argparse.ArgumentParser(
         "Run clinvar datapull, validate, parse, to_csv, create_sheets or "
@@ -84,3 +84,7 @@ if __name__ == "__main__":
         update = Update_Sheets(args.date)
         print(update)
         update.update_sheets()
+
+
+if __name__ == "__main__":
+    main()
