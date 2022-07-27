@@ -5,7 +5,7 @@ from pathlib import Path
 DATABASE = 'clinvar'
 # assumes /clinvar_ETL/clinvar_ETL/clinvar_utilities.py location
 PARENT_FOLDER = Path().resolve()
-PACKAGE_DATAFILES = Path(PARENT_FOLDER/'datafiles')
+PACKAGE_DATAFILES = Path(PARENT_FOLDER/'clinvar_ETL/datafiles')
 DATAPULL_JSONS_PATH = PACKAGE_DATAFILES/'datapull_jsons'
 PARSE_JSONS_PATH = PACKAGE_DATAFILES/'parse_jsons'
 PARSE_CSVS_PATH = PACKAGE_DATAFILES/'parse_csvs'
@@ -20,8 +20,6 @@ REPUTABLE_SUBMITTERS = [
     'Emory genetics laboratory',
     'ClinGen Glaucoma Variant Curation Expert Panel, ClinGen'
     ]
-print(PARENT_FOLDER)
-print("\n")
 
 def read_column(file_path, index=0):
     """simple function to read a line in file as list

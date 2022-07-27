@@ -12,9 +12,9 @@ import time
 from bs4 import BeautifulSoup as bsoup
 from Bio import Entrez
 from pathlib import Path
-from clinvar_ETL.clinvar_utilities import DATABASE, GLAUCOMA_GENES
-from clinvar_ETL.clinvar_utilities import PACKAGE_DATAFILES, DATAPULL_JSONS_PATH
-from clinvar_ETL.clinvar_utilities import TEST_RECORDS_PATH
+from .clinvar_utilities import DATABASE, GLAUCOMA_GENES
+from .clinvar_utilities import PACKAGE_DATAFILES, DATAPULL_JSONS_PATH
+from .clinvar_utilities import TEST_RECORDS_PATH
 from dotenv import load_dotenv
 # from typing import Union
 from urllib.error import HTTPError
