@@ -37,11 +37,11 @@ records associated. Alternatvely pull records by variation id(s).
 ```
 
 **Requires a datafiles files and folders**
-~/clinvar_ETL/clinvar_ETL/datafiles/datapull_jsons/
-~/clinvar_ETL/clinvar_ETL/datafiles/parse_jsons/
-~/clinvar_ETL/clinvar_ETL/datafiles/parse_csvs/
-~/clinvar_ETL/clinvar_ETL/datafiles/blocklist_pmids.csv
-~/clinvar_ETL/clinvar_ETL/datafiles/glaucoma_genes.csv
+~/clinvar_ETL/clinvar_ETL/datafiles/datapull_jsons/  
+~/clinvar_ETL/clinvar_ETL/datafiles/parse_jsons/  
+~/clinvar_ETL/clinvar_ETL/datafiles/parse_csvs/  
+~/clinvar_ETL/clinvar_ETL/datafiles/blocklist_pmids.csv  
+~/clinvar_ETL/clinvar_ETL/datafiles/glaucoma_genes.csv  
 
 **Requires a .env file to  contains the following:**
 - Entrez.api_key = 'API_KEY'
