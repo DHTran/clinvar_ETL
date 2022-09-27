@@ -2,7 +2,7 @@
 
 ### Introduction
 Query NCBI ClinVar by gene(s) to pull all, associated non-CNV (by default)
-records associated. Alternatvely pull records by variation id(s).
+records. Alternatvely pull records by variation id(s).
 - Save variation records as json data
 - Read saved records
 - parse ClinVar xmls (with Beautifulsoup library) to pull specific data (variant,
@@ -14,47 +14,36 @@ records associated. Alternatvely pull records by variation id(s).
 
 ```clinvar_ETL/
 ├── README.md
-├── clinvar_ETL
-│   ├── __init__.py
-│   ├── __main__.py
-│   ├── clinvar_datapull.py
-│   ├── clinvar_parse.py
-│   ├── clinvar_utilities.py
-│   ├── drive_api.py
-│   ├── clinvar_ETL
-│   ├── regex_patterns.py
-│   ├── datafiles
-│   │   ├── blocklist_pmids.csv
-│   │   ├── datapull_jsons
-│   │   ├── glaucoma_genes.csv
-│   │   ├── missing_ids
-│   │   ├── parse_csvs
-│   │   ├── parse_jsons
-│   │   └── test_records
-│   └── tests
-│       └── test_datapull.py
-├── poetry.lock
+├── __init__.py
+├── __main__.py
+├── clinvar_datapull.py
+├── clinvar_parse.py
+├── clinvar_utilities.py
+├── datafiles
+│   ├── blocklist_pmids.csv
+│   ├── datapull_jsons
+│   ├── missing_ids
+│   ├── parse_csvs
+│   ├── parse_jsons
+│   └── test_records
+├── drive_api.py
+├── main.py
+├── regex_patterns.py
+└── tests
+    └── test_datapull.py
 ```
-
-**Requires a datafiles files and folders**
-~/clinvar_ETL/clinvar_ETL/datafiles/datapull_jsons/  
-~/clinvar_ETL/clinvar_ETL/datafiles/parse_jsons/  
-~/clinvar_ETL/clinvar_ETL/datafiles/parse_csvs/  
-~/clinvar_ETL/clinvar_ETL/datafiles/blocklist_pmids.csv  
-~/clinvar_ETL/clinvar_ETL/datafiles/glaucoma_genes.csv  
 
 **Requires a .env file to  contains the following:**
 - Entrez.api_key = 'API_KEY'
 - Entrez.email = 'your_email'
   - See https://www.ncbi.nlm.nih.gov/books/NBK25497/ for creation of an API key to facilitate access to NCBI databases
-- A path to a secrets folder that loads Google Drive API credentials
+- Google Drive API credentials
   - 7/22/22: drive_api.py needs updating to work with recent Drive API updates
 
 ### Usage
+main.py provides a CLI for the package
 
 ```
-/clinvar_ETL/clinvar_ETL/main.py provides a CLI for the package and can be
-run directly or via python clinvar_ETL
 -- clinvar_ETL -o --gene 'MUTYH' --datapull:  queries ClinVar for MUTYH
   variation records and save as MUTYH.json, -o: overwrite existing json file
 -- clinvar_ETL --datapull: query using default gene list (provided in
