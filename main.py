@@ -3,7 +3,7 @@ import argparse
 from Bio import Entrez
 from pathlib import Path
 from clinvar_datapull import ClinVar_Datapull, Validate_Datapull
-from clinvar_parse import Read_Jsons
+from clinvar_parse import Read_ClinVar_Jsons
 # from drive_api import Create_Sheets, Update_Sheets
 # max number of retries after failed HTTP failures
 Entrez.max_tries = 5
@@ -67,7 +67,7 @@ def main():
         print(validate)
         validate.check_and_update()
     elif args.parse:
-        read_datapulls = Read_Jsons(return_data=False, test_flag=args.test_flag,
+        read_datapulls = Read_ClinVar_Jsons(return_data=False, test_flag=args.test_flag,
                                     overwrite=args.overwrite, genes=args.genes)
         print(read_datapulls)
         read_datapulls.parse_datapull_jsons()

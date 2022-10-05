@@ -17,7 +17,7 @@ from clinvar_datapull import ClinVar_Datapull as clinvar_dp
 def clean_string(string):
     """Remove python/coding-specific characters for better presentation."""
     # not flake8
-    PYTHON_CHARS = re.compile("[\{\}\'\[\]]")
+    PYTHON_CHARS = re.compile(r"[\{\}\'\[\]]")
 
     if isinstance(string, str):
         pass
@@ -193,8 +193,23 @@ class ClinVar_Parse_Record:
         results_dict['num_submitters'] = num_submitters
         # rename key 'chr' to 'chrom' to avoid chr() function name
         results_dict['chrom'] = results_dict.pop('chr')
-        results_dict['chrom'] = f"chr{results_dict['chrom']}"
+        results_dict = self.get_chr_pos_ref_alt(results_dict)
         return results_dict
+
+    def get_chr_pos_ref_alt(self, var_dict):
+        REMOVE_CHROM_PATTERN = re.compile(r'^[chrom]+', re.IGNORECASE)
+        chrom = var_dict.get('chrom')
+        chrom = re.sub(REMOVE_CHROM_PATTERN, "", chrom)
+        ref = var_dict.get('ref')
+        alt = var_dict.get('alt')
+        start = var_dict.get('start')
+        var_elements = [chrom, start, ref, alt]
+        if all(var_elements):
+            var_id = "-".join(var_elements)
+        else:
+            var_id = None
+        var_dict['chr-pos-ref-alt'] = var_id
+        return var_dict
 
     def get_assertion_data(self):
         """Parse 'clinicalassertion' XML node to get submission data.
@@ -310,7 +325,7 @@ class ClinVar_Parse_Record:
             self.get_pmids(data['submission_data']))
         # summary_dict['condition'] = data['condition']
         keys_to_add = [
-            'variation_id', 'name', 'date_updated',
+            'variation_id', 'name', 'chr-pos-ref-alt', 'date_updated',
             'num_submitters', 'start', 'stop', 'ref', 'alt',
             'chrom', 'gene']
         for key in keys_to_add:
@@ -432,7 +447,7 @@ class ClinVar_Parse_Record:
         return comment_dict
 
 
-class Read_Jsons(Load_Jsons_Mixin, XMLs_to_Soup_Mixin):
+class Read_ClinVar_Jsons(Load_Jsons_Mixin, XMLs_to_Soup_Mixin):
     """Read variation data pulled from ClinVar (from xml using beautiful
     soup xml parser), store as json.
 
@@ -453,12 +468,20 @@ class Read_Jsons(Load_Jsons_Mixin, XMLs_to_Soup_Mixin):
     def __init__(self, test_flag=False, overwrite=False, return_data=False,
                  genes=None, gene_panel=None):
         """Initialize overwrite and return_data flags, genes and gene_panel
-        attributes.
-
-        Also defines Paths for data folders from imported constants.
-
+        attributes. Defines Paths for data folders from imported constants.
         If no genes are provided, calls clinvar_datapull class (clinvar_dp) to
-        automatically create gene
+        automatically create genes list.
+
+        Args:
+          self.parse_jsons_path:folder to hold parse jsons
+          self.datapull_jsons_path: folder to hold datapull jsons
+          self.csvs_path: folder to hold parse csv files
+          self.overwrite: if true overwrite during save, default=False
+          self.return_data: if true return_data, default=False
+          self.test_flag: if true, limit to 10 records
+          self.var_id_variation_dict: dict with keys='var_ids' and
+            values='variation_id'. Holds all var_ids from loaded jsons.
+
         """
         self.parse_jsons_path = PARSE_JSONS_PATH
         self.datapull_jsons_path = DATAPULL_JSONS_PATH
@@ -474,11 +497,12 @@ class Read_Jsons(Load_Jsons_Mixin, XMLs_to_Soup_Mixin):
             if not isinstance(genes, list):
                 genes = [genes]
             self.genes = genes
+        self.var_id_summary_dict = {}
 
     def __repr__(self):
         """Print class attributes and blocklist_pmids."""
         repr_string = (f"""
-        Read_Jsons class
+        Read_ClinVar_Jsons class
         datapull_jsons_path = {self.datapull_jsons_path},
         parse_jsons_path {self.parse_jsons_path},
         csvs_path {self.csvs_path},
@@ -509,13 +533,17 @@ class Read_Jsons(Load_Jsons_Mixin, XMLs_to_Soup_Mixin):
                 soup_records = soup_records[0:10]
             for record in soup_records:
                 parsed_data = ClinVar_Parse_Record(record).get_record_data(gene)
+                var_id = parsed_data.get('chr-pos-ref-alt')
+                if var_id and (var_id not in self.var_id_summary_dict):
+                    self.var_id_summary_dict[var_id] = (
+                        parsed_data.get('classification_count'))
                 parsed_records.append(parsed_data)
             if not self.return_data:
                 if self.test_flag:
                     filename = f"{gene}_parse_test.json"
+
                 else:
                     filename = f"{gene}_parse.json"
-                # store in PARSE_JSONS_PATH by default
                 file_path = Path(self.parse_jsons_path/filename)
                 if file_path.exists() and not self.overwrite:
                     print("file exists")
@@ -526,7 +554,11 @@ class Read_Jsons(Load_Jsons_Mixin, XMLs_to_Soup_Mixin):
                     clinvar_dp().store(parsed_records, file)
                 continue
             gene_records[gene] = parsed_records
-        return gene_records
+        var_id_dict_path = (
+            Path(self.parse_jsons_path/"var_id_summary_dict.json"))
+        with open(var_id_dict_path, 'w') as file2:
+            clinvar_dp().store(self.var_id_summary_dict, file2)
+        return gene_records, self.var_id_summary_dict
 
     def parse_to_csv(self, today=None):
         """Load parse jsons and converts to dataframe and saves as csv.
@@ -538,6 +570,7 @@ class Read_Jsons(Load_Jsons_Mixin, XMLs_to_Soup_Mixin):
             'gene',
             'variation_id',
             'variation_url',
+            'chr-pos-ref-alt',
             'name',
             'classifications',
             'classification_count',

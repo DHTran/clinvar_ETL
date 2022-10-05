@@ -1,5 +1,7 @@
 # datafiles folder path
-datafiles/
+datafiles/datapull_jsons/*
+datafiles/parse_csvs/*
+datafiles/parse_jsons/*
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
