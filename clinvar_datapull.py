@@ -191,10 +191,9 @@ class ClinVar_Datapull(EncodeJsonMixin, Fetch_Mixin):
       overwrite (bool) -- True allows overwriting of existing jsons,
         default is False
 
-    main caller is get_records()
-        pulls variation ids for a given gene using
-        gene[Gene] queries with the optional [single_gene]
-        property on the NCBI database
+    main caller is get_records():
+      pulls variation ids for a given gene using gene[Gene] queries with the 
+      optional [single_gene] property on the NCBI database
     """
 
     def __init__(self, gene_panel=None, genes=None,

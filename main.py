@@ -72,7 +72,7 @@ def main():
         print(read_datapulls)
         read_datapulls.parse_datapull_jsons()
     elif args.to_csv:
-        read_datapulls = Read_Jsons(return_data=False, overwrite=args.overwrite,
+        read_datapulls = Read_ClinVar_Jsons(return_data=False, overwrite=args.overwrite,
                                     genes=args.genes)
         print(read_datapulls)
         read_datapulls.parse_to_csv()
