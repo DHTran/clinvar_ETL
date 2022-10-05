@@ -1,14 +1,14 @@
+"""CLI for clinvar_ETL.  Note Drive_Api needs updating."""
 import argparse
 from Bio import Entrez
-# from dotenv import load_dotenv
 from pathlib import Path
-from clinvar_ETL.clinvar_datapull import ClinVar_Datapull, Validate_Datapull
-from clinvar_ETL.clinvar_parse import Read_Jsons
-from clinvar_ETL.drive_api import Create_Sheets, Update_Sheets
+from clinvar_datapull import ClinVar_Datapull, Validate_Datapull
+from clinvar_parse import Read_Jsons
+# from drive_api import Create_Sheets, Update_Sheets
 # max number of retries after failed HTTP failures
 Entrez.max_tries = 5
 eutils_url = 'https://eutils.ncbi.nlm.nih.gov/entrez/eutils/'
-secrets_path = Path("~/secrets")
+# secrets_path = Path("~/secrets")
 
 def main():
     args = None
@@ -43,11 +43,11 @@ def main():
         '--parse', action="store_true", help="Run parse of ClinVar data")
     parser.add_argument(
         '--to_csv', action="store_true", help="Convert parse.jsons to CSVs")
-    parser.add_argument(
-        '--create_sheets', action="store_true",
-        help="Convert CSV to Google sheet")
-    parser.add_argument(
-        '--update_sheets', action="store_true", help="Update Sheet formatting")
+    # parser.add_argument(
+    #    '--create_sheets', action="store_true",
+    #    help="Convert CSV to Google sheet")
+    # parser.add_argument(
+    #    '--update_sheets', action="store_true", help="Update Sheet formatting")
     parser.add_argument(
         '--date', type=str, default=None, help="Date to filter, MM-DD-YYYY")
     parser.add_argument(
@@ -76,14 +76,14 @@ def main():
                                     genes=args.genes)
         print(read_datapulls)
         read_datapulls.parse_to_csv()
-    elif args.create_sheets:
-        drive = Create_Sheets()
-        print(drive)
-        drive.sheets_from_csvs()
-    elif args.update_sheets and args.date:
-        update = Update_Sheets(args.date)
-        print(update)
-        update.update_sheets()
+    # elif args.create_sheets:
+    #    drive = Create_Sheets()
+    #    print(drive)
+    #    drive.sheets_from_csvs()
+    # elif args.update_sheets and args.date:
+    #    update = Update_Sheets(args.date)
+    #    print(update)
+    #    update.update_sheets()
 
 
 if __name__ == "__main__":

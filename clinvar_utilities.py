@@ -5,7 +5,7 @@ from pathlib import Path
 DATABASE = 'clinvar'
 # assumes /clinvar_ETL/clinvar_ETL/clinvar_utilities.py location
 PARENT_FOLDER = Path().resolve()
-PACKAGE_DATAFILES = Path(PARENT_FOLDER/'clinvar_ETL/datafiles')
+PACKAGE_DATAFILES = Path(PARENT_FOLDER/'datafiles')
 DATAPULL_JSONS_PATH = PACKAGE_DATAFILES/'datapull_jsons'
 PARSE_JSONS_PATH = PACKAGE_DATAFILES/'parse_jsons'
 PARSE_CSVS_PATH = PACKAGE_DATAFILES/'parse_csvs'

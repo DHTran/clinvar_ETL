@@ -8,10 +8,10 @@ from bs4 import BeautifulSoup as bsoup
 from datetime import date
 from collections import Counter, defaultdict
 from pathlib import Path
-from clinvar_ETL.clinvar_utilities import DATAPULL_JSONS_PATH, BLOCKLIST_PMIDS
-from clinvar_ETL.clinvar_utilities import PARSE_JSONS_PATH, PARSE_CSVS_PATH
-from clinvar_ETL.clinvar_utilities import REPUTABLE_SUBMITTERS
-from clinvar_ETL.clinvar_datapull import ClinVar_Datapull as clinvar_dp
+from clinvar_utilities import DATAPULL_JSONS_PATH, BLOCKLIST_PMIDS
+from clinvar_utilities import PARSE_JSONS_PATH, PARSE_CSVS_PATH
+from clinvar_utilities import REPUTABLE_SUBMITTERS
+from clinvar_datapull import ClinVar_Datapull as clinvar_dp
 
 
 def clean_string(string):

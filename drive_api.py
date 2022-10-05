@@ -7,7 +7,7 @@ import pickle
 import time
 import socket
 import sys
-from clinvar_ETL.clinvar_utilities import PARSE_CSVS_PATH
+from clinvar_utilities import PARSE_CSVS_PATH
 from googleapiclient.http import MediaFileUpload
 from googleapiclient.errors import HttpError
 from googleapiclient.discovery import build
