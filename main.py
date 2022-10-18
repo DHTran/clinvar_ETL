@@ -1,4 +1,28 @@
-"""CLI for clinvar_ETL.  Note Drive_Api needs updating."""
+"""CLI for clinvar_ETL.  Runs clinvar datapull, validate, parse, to_csv,
+create_sheets, or update_sheets. Note create_sheets and update sheets are
+disabled (10-2022).
+
+Arguments
+--datapull:  pull data from ClinVar, saves as gene.json
+--validate: compares the list of variation ids from a query to what is pulled
+  then offers option to add missing ids via a another datapull
+--parse:  parse a ClinVar datapull, saves as gene_parse.json
+--to_csv: converts parses to csvs and saves as gene_MM_DD_YYYY (where
+  MM_DD_YYYY is the date of the conversion)
+--create_sheets: creates Google sheets from csv files
+--update_sheets: updates formatting to be more user-readable
+
+--check: prints arguments to confirm, without running
+--overwrite (-0): overwrites files during saves
+--genes (-g): list of genes to query, e.g. 'APC, BRCA1, NBN'
+--test (-t): limit query to 10 files or records
+--panel (-p): can select panel of genes, e.g. 'glaucoma'
+
+Example: python main.py --datapull --panel 'glaucoma' -o -t will run a
+the datapull.  -o indicates overwrite files, -t limits run to 10
+file or records.
+
+"""
 import argparse
 from Bio import Entrez
 from pathlib import Path
@@ -12,10 +36,8 @@ eutils_url = 'https://eutils.ncbi.nlm.nih.gov/entrez/eutils/'
 
 def main():
     args = None
-    parser = argparse.ArgumentParser(
-        "Run clinvar datapull, validate, parse, to_csv, create_sheets or "
-        "update_sheets from main.py"
-        )
+    parser = argparse.ArgumentParser(description=__doc__,
+        formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument(
         '-o', '--overwrite', help="if supplied overwrite saved files",
         action="store_true")
@@ -28,13 +50,13 @@ def main():
     parser.add_argument(
         '-p', '--panel', type=str, default=None, help="Which gene panel to \
         choose: 'glaucoma'",
-        choices=['glaucoma'])
+        choices=['glaucoma', 'avagen'])
     parser.add_argument(
         '-s', '--save_path', type=str, default=None, help="Path to save file \
             folder")
     parser.add_argument(
-        '-t', '--test_flag', action="store_true",
-        help="Limit query to 10 files")
+        '-t', '--test', action="store_true",
+        help="Limit query to 10 files/records")
     parser.add_argument(
         '--datapull', action="store_true", help="Run datapull")
     parser.add_argument(
@@ -43,6 +65,7 @@ def main():
         '--parse', action="store_true", help="Run parse of ClinVar data")
     parser.add_argument(
         '--to_csv', action="store_true", help="Convert parse.jsons to CSVs")
+    # Drive.api needs updating
     # parser.add_argument(
     #    '--create_sheets', action="store_true",
     #    help="Convert CSV to Google sheet")
@@ -57,7 +80,7 @@ def main():
         print(args)
     elif args.datapull:
         data = ClinVar_Datapull(
-            overwrite=args.overwrite, test_flag=args.test_flag,
+            overwrite=args.overwrite, test_flag=args.test,
             gene_panel=args.panel, genes=args.genes, path=args.save_path)
         print(data)
         data.get_records()
@@ -67,13 +90,14 @@ def main():
         print(validate)
         validate.check_and_update()
     elif args.parse:
-        read_datapulls = Read_ClinVar_Jsons(return_data=False, test_flag=args.test_flag,
-                                    overwrite=args.overwrite, genes=args.genes)
+        read_datapulls = Read_ClinVar_Jsons(
+            return_data=False, test_flag=args.test,
+            overwrite=args.overwrite, genes=args.genes)
         print(read_datapulls)
         read_datapulls.parse_datapull_jsons()
     elif args.to_csv:
-        read_datapulls = Read_ClinVar_Jsons(return_data=False, overwrite=args.overwrite,
-                                    genes=args.genes)
+        read_datapulls = Read_ClinVar_Jsons(
+            return_data=False, overwrite=args.overwrite, genes=args.genes)
         print(read_datapulls)
         read_datapulls.parse_to_csv()
     # elif args.create_sheets:

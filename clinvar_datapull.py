@@ -12,9 +12,9 @@ import time
 from bs4 import BeautifulSoup as bsoup
 from Bio import Entrez
 from pathlib import Path
-from clinvar_utilities import DATABASE, GLAUCOMA_GENES
+from clinvar_utilities import DATABASE, GLAUCOMA_GENES, AVAGEN_GENES
 from clinvar_utilities import PACKAGE_DATAFILES, DATAPULL_JSONS_PATH
-from clinvar_utilities import TEST_RECORDS_PATH
+from clinvar_utilities import TEST_RECORDS_PATH, read_column
 from dotenv import load_dotenv
 # from typing import Union
 from urllib.error import HTTPError
@@ -192,7 +192,7 @@ class ClinVar_Datapull(EncodeJsonMixin, Fetch_Mixin):
         default is False
 
     main caller is get_records():
-      pulls variation ids for a given gene using gene[Gene] queries with the 
+      pulls variation ids for a given gene using gene[Gene] queries with the
       optional [single_gene] property on the NCBI database
     """
 
@@ -358,16 +358,12 @@ class ClinVar_Datapull(EncodeJsonMixin, Fetch_Mixin):
         genes = []
         if gene_panel == 'glaucoma':
             gene_file = GLAUCOMA_GENES
-        elif gene_panel == 'TBD':
+        elif gene_panel == 'avagen':
             # for future panels
-            gene_file = None
+            gene_file = AVAGEN_GENES
         else:
             gene_file = GLAUCOMA_GENES
-        with open(PACKAGE_DATAFILES/gene_file) as f:
-            reader = csv.reader(f)
-            for row in reader:
-                gene = row[0].strip()
-                genes.append(gene)
+        genes = read_column(gene_file)
         return genes
 
     def fetch_test_records(self, save=False):

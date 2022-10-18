@@ -12,6 +12,7 @@ PARSE_CSVS_PATH = PACKAGE_DATAFILES/'parse_csvs'
 TEST_RECORDS_PATH = PACKAGE_DATAFILES/'test_records'
 BLOCKLIST_PATH = PACKAGE_DATAFILES/'blocklist_pmids.csv'
 GLAUCOMA_GENES = PACKAGE_DATAFILES/'glaucoma_genes.csv'
+AVAGEN_GENES = PACKAGE_DATAFILES/'avagen2_genes.csv'
 REPUTABLE_SUBMITTERS = [
     'Invitae', 'GeneDx', 'Color', 'Ambry',
     'Partners', 'Counsyl', 'Insight', 'ARUP',
